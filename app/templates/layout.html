@@ -67,8 +67,8 @@
 </header>
         <div class="wrapper row-offcanvas row-offcanvas-left">
             <!-- Left side column. contains the logo and sidebar -->
-          
-          
+          {% include 'menu.html' %}
+          {% block page_content %}{% endblock %}
         </div><!-- ./wrapper -->
 
         <!-- add new calendar event modal -->
