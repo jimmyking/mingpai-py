@@ -85,25 +85,12 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">新增用户 </h4>
                     </div>
-                    <form action="#" method="get">
+                    <form action="{{ url_for('main.add_user')}}" method="post">
                         <div class="modal-body">
                           <div class="form-group">
                               <div class="input-group">
                                   <span class="input-group-addon">用户名:</span>
-                                  <input name="name" class="form-control">
-                              </div>
-                          </div>
-                          
-                          <div class="form-group">
-                              <div class="input-group">
-                                  <span class="input-group-addon">部&nbsp;&nbsp;&nbsp;&nbsp;门:</span>
-                                  <select class="form-control">
-                                      <option>option 1</option>
-                                      <option>option 2</option>
-                                      <option>option 3</option>
-                                      <option>option 4</option>
-                                      <option>option 5</option>
-                                  </select>
+                                  <input name="username" class="form-control">
                               </div>
                           </div>
                           

@@ -19,6 +19,7 @@ class User(UserMixin,db.Model):
     username = db.Column(db.String(64), unique=True, index=True)
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
+    name = db.Column(db.String(64))
 
     @property
     def password(self):
@@ -33,6 +34,12 @@ class User(UserMixin,db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+        }
 
 @login_manager.user_loader
 def user_loader(user_id):
