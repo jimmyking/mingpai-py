@@ -87,3 +87,51 @@ def get_area(aid):
 
 
 
+#服务器管理
+
+@game.route('/servers/<gid>/<aid>')
+@login_required
+def servers(gid,aid):
+	game = Game.query.filter_by(id=gid).first()
+	area = Area.query.filter_by(id=aid).first()
+	servers = Server.query.filter_by(area_id=aid).all()
+	return render_template('game/servers.html',game=game,area=area,servers=servers)
+
+@game.route('/add_server',methods=['POST'])
+@login_required
+def add_server():
+	gid = request.form['gid']
+	aid = request.form['aid']
+	server = Server(name=request.form['name'],area_id=aid)
+	db.session.add(server)
+	db.session.commit()
+	return redirect(url_for('game.servers',gid=gid,aid=aid))
+	
+
+@game.route('/del_server',methods=['POST'])
+@login_required
+def del_server():
+	gid = request.form['gid']
+	aid = request.form['aid']
+	sids = request.form['sids']
+	Server.query.filter(Server.id.in_(sids.split(','))).delete(synchronize_session=False)
+	return redirect(url_for('game.servers',gid=gid,aid=aid))
+
+@game.route('/update_server',methods=['POST'])
+@login_required
+def update_server():
+	gid = request.form['gid']
+	aid = request.form['aid']
+	sid = request.form['id']
+	name = request.form['name']
+	Server.query.filter_by(id=sid).update({Server.name:name})
+	db.session.commit()
+	return redirect(url_for('game.servers',gid=gid,aid=aid))
+
+@game.route('/_get_server/<sid>')
+def get_server(sid):
+	server = Server.query.filter_by(id=sid).first()
+	return jsonify(server.to_json())
+
+
+

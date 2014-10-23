@@ -7,11 +7,14 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            游戏管理
+            服务器管理
+            <small>{{ game.name }}-{{ area.name }}</small>
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ url_for('main.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active"><a href="{{ url_for('game.games') }}">游戏管理</a></li>
+            <li class=""><a href="{{ url_for('game.games') }}">游戏管理</a></li>
+            <li class=""><a href="{{ url_for('game.areas',gid=game.id) }}">区管理</a></li>
+            <li class="active"><a href="{{ url_for('game.servers',gid=game.id, aid=area.id) }}">服务器管理</a></li>
         </ol>
     </section>
 
@@ -25,7 +28,7 @@
                     <div class="box-body">
                         
                         <div class="box-header">
-                            <h3 class="box-title">游戏列表</h3>
+                            <h3 class="box-title">服务器列表</h3>
                             <span class="pull-right">
                               <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add-user-modal"><i class='fa fa-plus'></i></button>
                               <button type="button" class="btn btn-danger mutiple-delete-user"><i class='fa fa-trash-o'></i></button>
@@ -38,26 +41,25 @@
                                     <input type="checkbox" class="icheckbox_square-blue check-all"/>
                                   </th>
                                   <th style="width: 10px">#</th>
-                                  <th>游戏名称</th>
+                                  <th>服务器名称</th>
                                   <th style="width: 200px">操作</th>
                               </tr>
 
-                              {% for game in games %}
+                              {% for server in servers %}
                               <tr>
                                   <td>
-                                    <input type="checkbox" value="{{ game.id }}" class="minimal-red check-item"/>
+                                    <input type="checkbox" value="{{ server.id }}" class="minimal-red check-item"/>
                                    
                                   </td>
-                                  <td>{{ game.id }}</td>
+                                  <td>{{ server.id }}</td>
                                  
-                                  <td>{{ game.name }}</td>
+                                  <td>{{ server.name }}</td>
                                   
                                   <td>
                                     
                                         <button type="button" class="btn btn-default edit-user"><i class='fa fa-wrench'></i></button>
 
-                                        <button type="button" class="btn btn-default">
-                                          <a href="{{ url_for('game.areas',gid=game.id) }}"><i class='fa fa-angle-double-down'></i></a>
+                                       
                                           
                                         </button>
                                        
@@ -87,13 +89,15 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">新增游戏 </h4>
+                <h4 class="modal-title">新增 </h4>
             </div>
-            <form action="{{ url_for('game.add_game')}}" method="post">
+            <form action="{{ url_for('game.add_server')}}" method="post">
+                <input type="hidden" name="gid" value="{{ game.id }}"/>
+                <input type="hidden" name="aid" value="{{ area.id }}"/>
                 <div class="modal-body">
                   <div class="form-group">
                       <div class="input-group">
-                          <span class="input-group-addon">游戏名称:</span>
+                          <span class="input-group-addon">服务器名称:</span>
                           <input name="name" class="form-control">
                       </div>
                   </div>
@@ -113,12 +117,14 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">删除游戏 </h4>
+                <h4 class="modal-title">删除服务器 </h4>
             </div>
-            <form action="{{ url_for('game.del_game')}}" method="post">
+            <form action="{{ url_for('game.del_server')}}" method="post">
+            <input type="hidden" name="gid" value="{{ game.id }}"/>
+            <input type="hidden" name="aid" value="{{ area.id }}"/>
                 <div class="modal-body">
-                  是否确认删除这些游戏
-                  <input type="hidden" id="gids" name="gids"/>
+                  是否确认删除这些区
+                  <input type="hidden" id="gids" name="sids"/>
                 </div>
                 <div class="modal-footer clearfix">
                   <button type="submit" class="btn btn-primary">提交</button>
@@ -135,14 +141,16 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">编辑游戏 </h4>
+                <h4 class="modal-title">编辑服务器 </h4>
             </div>
-            <form action="{{ url_for('game.update_game')}}" method="post">
+            <form action="{{ url_for('game.update_server')}}" method="post">
+                <input type="hidden" name="gid" value="{{ game.id }}"/>
+                <input type="hidden" name="aid" value="{{ area.id }}"/>
                 <input name="id" value="" type="hidden" id="edit-id">
                 <div class="modal-body">
                   <div class="form-group">
                       <div class="input-group">
-                          <span class="input-group-addon">游戏名称:</span>
+                          <span class="input-group-addon">服务器名称:</span>
                           <input name="name" id="edit-name" class="form-control">
                       </div>
                   </div>
@@ -190,7 +198,7 @@
        
        $(".edit-user").on("click",function(){
          selected_id = $(this).parent().siblings().find(':checkbox').val()
-         $.getJSON('_get_game/'+selected_id,function(data){
+         $.getJSON('/game/_get_server/'+selected_id,function(data){
             $('#edit-id').val(data.id);
             $('#edit-name').val(data.username);
             $('#edit-user-modal').modal();
