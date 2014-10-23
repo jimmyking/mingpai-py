@@ -86,6 +86,34 @@ class Server(db.Model):
             'username': self.name,
         }
 
+class OrderType(db.Model):
+    __tablename__ = 'order_types'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+
+    def __repr__(self):
+        return '<OrderType %r>' % self.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
+class IssueType(db.Model):
+    __tablename__ = 'issue_types'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+
+    def __repr__(self):
+        return '<IssueType %r>' % self.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+        }
+
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
