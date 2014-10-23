@@ -1,6 +1,7 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
 from . import db,login_manager
+from datetime import datetime
 
 
 class Role(db.Model):
@@ -39,6 +40,50 @@ class User(UserMixin,db.Model):
         return {
             'id': self.id,
             'username': self.username,
+        }
+
+class Game(db.Model):
+    __tablename__ = "games"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+
+    def __repr__(self):
+        return '<Game %r>' % self.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'username': self.name,
+        }
+
+class Area(db.Model):
+    __tablename__ = 'areas'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+    game_id = db.Column(db.Integer, db.ForeignKey('games.id'))
+
+    def __repr__(self):
+        return '<Area %r>' % self.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'username': self.name,
+        }
+
+class Server(db.Model):
+    __tablename__ = 'servers'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64), unique=True, index=True)
+    area_id = db.Column(db.Integer, db.ForeignKey('areas.id'))
+
+    def __repr__(self):
+        return '<Server %r>' % self.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'username': self.name,
         }
 
 @login_manager.user_loader
