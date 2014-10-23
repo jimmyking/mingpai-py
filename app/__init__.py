@@ -24,8 +24,11 @@ def create_app(config_name):
     from .auth import auth as auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
 
-    from .game import game as auth_blueprint
-    app.register_blueprint(auth_blueprint, url_prefix='/game')
+    from .game import game as game_blueprint
+    app.register_blueprint(game_blueprint, url_prefix='/game')
+
+    from .dic import dic as dic_blueprint
+    app.register_blueprint(dic_blueprin, url_prefix='/dic')
 
     return app
 
