@@ -27,7 +27,7 @@
                         <div class="box-header">
                             <h3 class="box-title">用户列表</h3>
                             <span class="pull-right">
-                              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#user-modal"><i class='fa fa-plus'></i></button>
+                              <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add-user-modal"><i class='fa fa-plus'></i></button>
                               <button type="button" class="btn btn-danger mutiple-delete-user"><i class='fa fa-trash-o'></i></button>
                             </span>
                         </div><!-- /.box-header -->
@@ -38,7 +38,8 @@
                                     <input type="checkbox" class="icheckbox_square-blue check-all"/>
                                   </th>
                                   <th style="width: 10px">#</th>
-                                  <th>用户姓名</th>
+                                  <th>用户名</th>
+                                  <th>姓名</th>
                                   <th>角色</th>
                                   <th style="width: 200px">操作</th>
                               </tr>
@@ -46,17 +47,19 @@
                               {% for user in users %}
                               <tr>
                                   <td>
-                                    <input type="checkbox" class="minimal-red check-item"/>
+                                    <input type="checkbox" value="{{ user.id }}" class="minimal-red check-item"/>
+                                   
                                   </td>
                                   <td>{{ user.id }}</td>
                                   <td>{{ user.username }}</td>
+                                  <td>{{ user.name }}</td>
                                   <td>
                                       2014-09-09 12:12
                                   </td>
                                   <td>
                                     
-                                        <button type="button" class="btn btn-default"><i class='fa fa-wrench'></i></button>
-                                        <button type="button" class="btn btn-default delete-user"><i class='fa fa-trash-o'></i></button>
+                                        <button type="button" class="btn btn-default edit-user"><i class='fa fa-wrench'></i></button>
+                                       
                                    
                                   </td>
                               </tr>
@@ -78,37 +81,95 @@
 
 {% block otherdiv %}
  <!-- COMPOSE MESSAGE MODAL -->
-        <div class="modal fade" id="user-modal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                        <h4 class="modal-title">新增用户 </h4>
-                    </div>
-                    <form action="{{ url_for('main.add_user')}}" method="post">
-                        <div class="modal-body">
-                          <div class="form-group">
-                              <div class="input-group">
-                                  <span class="input-group-addon">用户名:</span>
-                                  <input name="username" class="form-control">
-                              </div>
-                          </div>
-                          
-                          <div class="form-group">
-                              <div class="input-group">
-                                  <span class="input-group-addon">密&nbsp;&nbsp;&nbsp;&nbsp;码:</span>
-                                  <input type="password" name="password" class="form-control">
-                              </div>
-                          </div>
-                          
-                        </div>
-                        <div class="modal-footer clearfix">
-                          <button type="submit" class="btn btn-primary">提交</button>
-                        </div>
-                    </form>
-                </div><!-- /.modal-content -->
-            </div><!-- /.modal-dialog -->
-        </div><!-- /.modal -->
+<div class="modal fade" id="add-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">新增用户 </h4>
+            </div>
+            <form action="{{ url_for('main.add_user')}}" method="post">
+                <div class="modal-body">
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">用户名:</span>
+                          <input name="username" class="form-control">
+                      </div>
+                  </div>
+                  
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">密&nbsp;&nbsp;&nbsp;&nbsp;码:</span>
+                          <input type="password" name="password" class="form-control">
+                      </div>
+                  </div>
+                  
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade bs-example-modal-sm" id="del-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">删除用户 </h4>
+            </div>
+            <form action="{{ url_for('main.delete_user')}}" method="post">
+                <div class="modal-body">
+                  是否确认删除这些用户
+                  <input type="hidden" id="uids" name="uids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<div class="modal fade" id="edit-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">编辑用户 </h4>
+            </div>
+            <form action="{{ url_for('main.update_user')}}" method="post">
+                <input name="id" value="" type="hidden" id="edit-id">
+                <div class="modal-body">
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">用户名:</span>
+                          <input name="username" id="edit-username" class="form-control">
+                      </div>
+                  </div>
+                  
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">密&nbsp;&nbsp;&nbsp;&nbsp;码:</span>
+                          <input type="password" name="password" class="form-control">
+                      </div>
+                  </div>
+                  
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 {% endblock %}
 
 {% block foot_js %}
@@ -116,6 +177,7 @@
 
 <script type="text/javascript">
      $(function() {
+        /*
        $(".sidebar-menu > li").removeClass('active');
        $(".sidebar-menu > li").each(
          function(index,element){
@@ -126,7 +188,7 @@
          }
        );
        $(".sidebar .treeview").tree();
-       
+       */
        
        //用户table操作
        $(".check-all").on("ifChanged",function(event){
@@ -137,8 +199,14 @@
          }
        });
        
-       $(".table").on("click","button.delete-user",function(){
-         $(this).parents("tr").first().remove();
+       
+       $(".edit-user").on("click",function(){
+         selected_id = $(this).parent().siblings().find(':checkbox').val()
+         $.getJSON('_get_user/'+selected_id,function(data){
+            $('#edit-id').val(data.id);
+            $('#edit-username').val(data.username);
+            $('#edit-user-modal').modal();
+         });
        });
        
        
@@ -154,11 +222,10 @@
          });
          if(checked_item_size == 0){
            alert("至少选择一个需要删除的项目");
-         }else{
-           $(checked_items).each(function(index,item){
-             $(item).parents("tr").first().remove();
-           });
-           $(".check-all").iCheck('uncheck');
+         }else{            
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#uids').val(uids);
+            $('#del-user-modal').modal();
          }
        });
       

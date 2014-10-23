@@ -26,6 +26,23 @@ def add_user():
 	db.session.commit()
 	return redirect(url_for('main.users'))
 
+@main.route('/del_user',methods=['POST'])
+@login_required
+def delete_user():
+	uids = request.form['uids']
+	User.query.filter(User.id.in_(uids.split(','))).delete(synchronize_session=False)
+	return redirect(url_for('main.users'))
+
+@main.route('/update_user',methods=['POST'])
+@login_required
+def update_user():
+	uid = request.form['id']
+	username = request.form['username']
+	#password = request.form['password']
+	User.query.filter_by(id=uid).update({User.username:username})
+	db.session.commit()
+	return redirect(url_for('main.users'))
+
 @main.route('/_get_user/<uid>')
 def get_user(uid):
 	user = User.query.filter_by(id=uid).first()
