@@ -30,5 +30,8 @@ def create_app(config_name):
     from .dic import dic as dic_blueprint
     app.register_blueprint(dic_blueprint, url_prefix='/dic')
 
+    from .order import order as order_blueprint
+    app.register_blueprint(order_blueprint, url_prefix='/order')
+
     return app
 
