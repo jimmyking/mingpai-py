@@ -28,7 +28,7 @@ def create_app(config_name):
     app.register_blueprint(game_blueprint, url_prefix='/game')
 
     from .dic import dic as dic_blueprint
-    app.register_blueprint(dic_blueprin, url_prefix='/dic')
+    app.register_blueprint(dic_blueprint, url_prefix='/dic')
 
     return app
 

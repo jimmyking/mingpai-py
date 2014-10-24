@@ -4,7 +4,7 @@
         <ul class="sidebar-menu">
             <li class="">
                 <a href=" {{ url_for('main.users') }} ">
-                    <i class="fa fa-users"></i> <span>用户管理</span>
+                    <i class="fa fa-user"></i> <span>用户管理</span>
                 </a>
             </li>
             <li class="">
@@ -13,13 +13,13 @@
                 </a>
             </li>
             <li class="">
-                <a href=" {{ url_for('game.games') }} ">
-                    <i class="fa fa-android"></i> <span>ordertype管理</span>
+                <a href=" {{ url_for('dic.ordertypes') }} ">
+                    <i class="fa fa-inbox"></i> <span>订单类型管理</span>
                 </a>
             </li>
             <li class="">
-                <a href=" {{ url_for('game.games') }} ">
-                    <i class="fa fa-android"></i> <span>issuetype管理</span>
+                <a href=" {{ url_for('dic.issuetypes') }} ">
+                    <i class="fa fa-bug"></i> <span>异常类型管理</span>
                 </a>
             </li>
         </ul>

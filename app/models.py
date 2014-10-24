@@ -90,6 +90,7 @@ class OrderType(db.Model):
     __tablename__ = 'order_types'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True, index=True)
+    color = db.Column(db.String(64))
 
     def __repr__(self):
         return '<OrderType %r>' % self.name
@@ -98,6 +99,7 @@ class OrderType(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'color': self.color,
         }
 
 class IssueType(db.Model):
