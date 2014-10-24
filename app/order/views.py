@@ -18,11 +18,38 @@ def orders():
 @order.route('/add_order',methods=['POST'])
 @login_required
 def add_order():
-
-	order = Order(dict(request.form))
+	type_id = request.form['type_id']
+	area_id = request.form['area_id']
+	acter_name = request.form['acter_name']
+	acter_account = request.form['acter_account']
+	acter_password = request.form['acter_password']
+	start_level = request.form['start_level']
+	end_level = request.form['end_level']
+	wangwang = request.form['wangwang']
+	qq = request.form['qq']
+	mobile = request.form['mobile']
+	amount = request.form['amount']
+	paytype = request.form['paytype']
+	memo = request.form['memo']
+	order = Order(type_id=int(type_id),area_id=int(area_id),acter_name=acter_name, \
+		            acter_account=acter_account,acter_password=acter_password, \
+		            start_levhel=start_level,end_level=end_level,now_level=start_level, \
+		            wangwang=wangwang,qq=qq,mobile=mobile,amount=amount, \
+		            paytype=paytype,memo=memo)
+	order.status_id=1
+	order.init_order_no()
 	db.session.add(order)
 	db.session.commit()
 	return redirect(url_for('order.orders'))
+
+@order.route('/del_order',methods=['POST'])
+@login_required
+def del_order():
+	gids = request.form['gids']
+	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.is_delete:1})
+	db.session.commit()
+	return redirect(url_for('order.orders'))
+
 
 """
 from datetime import date

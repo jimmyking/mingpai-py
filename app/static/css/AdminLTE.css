@@ -28,7 +28,7 @@ a:focus {
   outline: none;
   text-decoration: none;
   color: #72afd2;
-}
+}dialog
 /* Layouts */
 .wrapper {
   min-height: 100%;
@@ -3540,4 +3540,11 @@ fieldset[disabled] .btn-vk.active {
 
 .table>tbody>tr>td {
   vertical-align:middle;
+}
+
+.modal-big {
+  width: 815px;
+}
+.inline-form-magin {
+  margin-top:10px;
 }

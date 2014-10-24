@@ -120,6 +120,7 @@ class OrderStatus(db.Model):
     __tablename__ = 'order_status'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
+
     def __repr__(self):
         return '<OrderStatus %r>' % self.name
 
@@ -143,13 +144,18 @@ class Order(db.Model):
     amount = db.Column(db.String(64))
     paytype = db.Column(db.String(128))
     memo = db.Column(db.String(128))
-    is_issue = db.Column(db.Integer)
+    is_issue = db.Column(db.Integer,default=0)
+    is_delete = db.Column(db.Integer,default=0)
     issue_id = db.Column(db.Integer,db.ForeignKey('issue_types.id'))
     issue_memo = db.Column(db.String(128))
     create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     create_date = db.Column(db.DateTime,default=datetime.now,index=True)
     update_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     update_date = db.Column(db.DateTime,default=datetime.now)
+
+    order_type = db.relationship("OrderType", backref=db.backref("orders", order_by=id))
+    order_status = db.relationship("OrderStatus", backref=db.backref("order_status", order_by=id))
+    area = db.relationship("Area", backref=db.backref("areas", order_by=id))
 
     #def init_order_no(self):
      #   db.session.query(Order.id,db.func.count('*')).filter(Order.create_date=datetime.now)
@@ -178,9 +184,10 @@ class Order(db.Model):
             'memo': self.memo,
         }
 
-    @classmethod
-    def init_order_no(cls):
-        db.session.query(Order.id,db.func.count('*').label('count')).filter(db.cast(Order.create_date,db.DATE)==date.today()).first()
+    def init_order_no(self):
+        row = db.session.query(Order.id,db.func.count('*').label('count')).filter(db.cast(Order.create_date,db.DATE)==date.today()).first()
+        count = row.count+1
+        self.order_no = datetime.now().strftime('%Y%m%d')+str(count).zfill(5)
 
 #        Match.query.filter(cast(Match.date_time_field, DATE)==date.today()).all()
 
