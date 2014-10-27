@@ -3,17 +3,19 @@ from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request
 from flask.ext.login import login_required
-from ..models import OrderType,IssueType,Order
+from ..models import OrderType,IssueType,Order,Area
 from .. import db
 from . import order
 
+#订单处理中心
 @order.route('/')
 @login_required
 def orders():
 	ordertypes = OrderType.query.order_by('id').all()
 	issuetypes = IssueType.query.order_by('id').all()
-	orders = Order.query.order_by('id').all()
-	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders)
+	areas = Area.query.order_by('id').all()
+	orders = Order.query.filter_by(is_delete=0).order_by('id').all()
+	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas)
 
 @order.route('/add_order',methods=['POST'])
 @login_required
@@ -33,7 +35,7 @@ def add_order():
 	memo = request.form['memo']
 	order = Order(type_id=int(type_id),area_id=int(area_id),acter_name=acter_name, \
 		            acter_account=acter_account,acter_password=acter_password, \
-		            start_levhel=start_level,end_level=end_level,now_level=start_level, \
+		            start_level=start_level,end_level=end_level,now_level=start_level, \
 		            wangwang=wangwang,qq=qq,mobile=mobile,amount=amount, \
 		            paytype=paytype,memo=memo)
 	order.status_id=1
@@ -42,14 +44,64 @@ def add_order():
 	db.session.commit()
 	return redirect(url_for('order.orders'))
 
+@order.route('/update_order',methods=['POST'])
+@login_required
+def update_order():
+	gid = request.form['id']
+	type_id = request.form['type_id']
+	area_id = request.form['area_id']
+	acter_name = request.form['acter_name']
+	acter_account = request.form['acter_account']
+	acter_password = request.form['acter_password']
+	start_level = request.form['start_level']
+	end_level = request.form['end_level']
+	wangwang = request.form['wangwang']
+	qq = request.form['qq']
+	mobile = request.form['mobile']
+	amount = request.form['amount']
+	paytype = request.form['paytype']
+	memo = request.form['memo']
+	Order.query.filter_by(id=gid).update({Order.type_id:type_id,Order.area_id:area_id,Order.acter_name:acter_name, \
+										  Order.acter_account:acter_account,Order.acter_password:acter_password, \
+										  Order.start_level:start_level,Order.end_level:end_level,Order.wangwang:wangwang, \
+										  Order.qq:qq,Order.mobile:mobile,Order.amount:amount,Order.paytype:paytype,Order.memo:memo})
+	db.session.commit()
+	return redirect(url_for('order.orders'))
+
 @order.route('/del_order',methods=['POST'])
 @login_required
 def del_order():
 	gids = request.form['gids']
-	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.is_delete:1})
+	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.is_delete:1},synchronize_session=False)
 	db.session.commit()
 	return redirect(url_for('order.orders'))
 
+@order.route('/_get_order/<gid>')
+def get_order(gid):
+	order = Order.query.filter_by(id=gid).first()
+	return jsonify(order.to_json())
+
+
+
+
+
+
+
+
+#订单回收站
+@order.route('/trash')
+@login_required
+def trash():
+	orders = Order.query.filter_by(is_delete=1).order_by('id').all()
+	return render_template('order/trash.html',orders=orders)
+
+@order.route('/undel',methods=['POST'])
+@login_required
+def undel_order():
+	gids = request.form['gids']
+	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.is_delete:0},synchronize_session=False)
+	db.session.commit()
+	return redirect(url_for('order.trash'))
 
 """
 from datetime import date

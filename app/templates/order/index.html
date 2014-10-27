@@ -37,7 +37,6 @@
                                   <th style="width: 10px">
                                     <input type="checkbox" class="icheckbox_square-blue check-all"/>
                                   </th>
-                                  <th style="width: 10px">#</th>
                                   <th>订单号</th>
                                   <th>订单类型</th>
                                   <th>订单状态</th>
@@ -64,7 +63,6 @@
                                     <input type="checkbox" value="{{ order.id }}" class="minimal-red check-item"/>
                                    
                                   </td>
-                                  <td>{{ order.id }}</td>
                                  
                                   <th>{{ order.order_no}}</th>
                                   <th>{{ order.order_type.name}}</th>
@@ -120,13 +118,23 @@
 
                         <div class="input-group">
                           <span class="input-group-addon">订单类型:</span>
-                          <input name="type_id" class="form-control long-input">
+                          <select name="type_id" class="form-control long-input">
+                            {% for ot in ordertypes %}
+                            <option value="{{ ot.id }}">{{ ot.name }}</option>
+                            {% endfor %}
+                          </select>
+                          <!-- <input name="type_id" class="form-control long-input"> -->
                         </div>
                         <div class="input-group" style="width:225px;">
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">所在区:</span>
-                          <input name="area_id" class="form-control">
+                          <select name="area_id" class="form-control long-input">
+                            {% for ar in areas %}
+                            <option value="{{ ar.id }}">{{ ar.name }}</option>
+                            {% endfor %}
+                          </select>
+                          <!-- <input name="area_id" class="form-control"> -->
                         </div>
                         
                       </div>
@@ -241,23 +249,118 @@
 
 
 <div class="modal fade" id="edit-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-big">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">编辑游戏 </h4>
             </div>
-            <form action="{{ url_for('game.update_game')}}" method="post">
-                <input name="id" value="" type="hidden" id="edit-id">
+            <form action="{{ url_for('order.update_order')}}" method="post">
+            <input type="hidden" name="id" id="edit-id"/>
                 <div class="modal-body">
                   <div class="form-group">
-                      <div class="input-group">
-                          <span class="input-group-addon">游戏名称:</span>
-                          <input name="name" id="edit-name" class="form-control">
+                      <div class="form-inline">
+
+                        <div class="input-group">
+                          <span class="input-group-addon">订单类型:</span>
+                          <select name="type_id" class="form-control long-input" id="edit-type_id">
+                            {% for ot in ordertypes %}
+                            <option value="{{ ot.id }}">{{ ot.name }}</option>
+                            {% endfor %}
+                          </select>
+                          <!-- <input name="type_id" class="form-control long-input"> -->
+                        </div>
+                        <div class="input-group" style="width:225px;">
+                        </div>
+                        <div class="input-group">
+                          <span class="input-group-addon">所在区:</span>
+                          <select name="area_id" class="form-control long-input" id="edit-area_id">
+                            {% for ar in areas %}
+                            <option value="{{ ar.id }}">{{ ar.name }}</option>
+                            {% endfor %}
+                          </select>
+                          <!-- <input name="area_id" class="form-control"> -->
+                        </div>
+                        
                       </div>
+
+                      <div class="form-inline inline-form-magin">
+
+                        <div class="input-group">
+                          <span class="input-group-addon">角色名:</span>
+                          <input name="acter_name" class="form-control" id="edit-acter_name">
+                        </div>
+                        
+                        <div class="input-group">
+                          <span class="input-group-addon">帐号:</span>
+                          <input name="acter_account" class="form-control" id="edit-acter_account">
+                        </div>
+
+                        <div class="input-group">
+                          <span class="input-group-addon">密码:</span>
+                          <input name="acter_password" class="form-control" id="edit-acter_password">
+                        </div>
+                        
+                      </div>
+
+                      <div class="form-inline inline-form-magin">
+
+                         <div class="input-group">
+                          <span class="input-group-addon">起始等级:</span>
+                          <input name="start_level" class="form-control long-input" id="edit-start_level">
+                        </div>
+                        <div class="input-group" style="width:200px;">
+                        </div>
+                        <div class="input-group">
+                          <span class="input-group-addon">需求等级:</span>
+                          <input name="end_level" class="form-control" id="edit-end_level">
+                        </div>
+                        
+                      </div>
+
+
+                      <div class="form-inline inline-form-magin">
+
+                         <div class="input-group">
+                          <span class="input-group-addon">旺旺:</span>
+                          <input name="wangwang" class="form-control long-input" id="edit-wangwang">
+                        </div>
+                        <div class="input-group">
+                          <span class="input-group-addon">qq号:</span>
+                          <input name="qq" class="form-control" id="edit-qq">
+                        </div>
+                        <div class="input-group">
+                          <span class="input-group-addon">手机号:</span>
+                          <input name="mobile" class="form-control" id="edit-mobile">
+                        </div>
+                        
+                      </div>
+
+                      <div class="form-inline inline-form-magin">
+
+                         <div class="input-group">
+                          <span class="input-group-addon">支付金额:</span>
+                          <input name="amount" class="form-control long-input" id="edit-amount">
+                        </div>
+                        <div class="input-group" style="width:200px;">
+                        </div>
+                        <div class="input-group">
+                          <span class="input-group-addon">支付方式:</span>
+                          <input name="paytype" class="form-control" id="edit-paytype">
+                        </div>
+                        
+                      </div>
+
+                      <div class="inline-form-magin">
+
+                         <div class="input-group">
+                          <span class="input-group-addon">备注:</span>
+                          <input name="memo" class="form-control long-input" id="edit-memo">
+                        </div>
+                      </div>
+                      
                   </div>
-                 
-                  
+
                 </div>
                 <div class="modal-footer clearfix">
                   <button type="submit" class="btn btn-primary">提交</button>
@@ -275,18 +378,7 @@
 
 <script type="text/javascript">
      $(function() {
-        /*
-       $(".sidebar-menu > li").removeClass('active');
-       $(".sidebar-menu > li").each(
-         function(index,element){
-           if(index==0){
-             //alert(item);
-             $(element).addClass('active');
-           }
-         }
-       );
-       $(".sidebar .treeview").tree();
-       */
+       
        
        //用户table操作
        $(".check-all").on("ifChanged",function(event){
@@ -300,9 +392,21 @@
        
        $(".edit-user").on("click",function(){
          selected_id = $(this).parent().siblings().find(':checkbox').val()
-         $.getJSON('_get_game/'+selected_id,function(data){
+         $.getJSON('/order/_get_order/'+selected_id,function(data){
             $('#edit-id').val(data.id);
-            $('#edit-name').val(data.username);
+            $('#edit-type_id').val(data.type_id);
+            $('#edit-area_id').val(data.area_id);
+            $('#edit-acter_name').val(data.acter_name);
+            $('#edit-acter_password').val(data.acter_password);
+            $('#edit-acter_account').val(data.acter_account);
+            $('#edit-start_level').val(data.start_level);
+            $('#edit-end_level').val(data.end_level);
+            $('#edit-wangwang').val(data.wangwang);
+            $('#edit-qq').val(data.qq);
+            $('#edit-mobile').val(data.mobile);
+            $('#edit-amount').val(data.amount);
+            $('#edit-paytype').val(data.paytype);
+            $('#edit-memo').val(data.memo);
             $('#edit-user-modal').modal();
          });
        });
