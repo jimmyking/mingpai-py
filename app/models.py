@@ -157,8 +157,7 @@ class Order(db.Model):
     order_status = db.relationship("OrderStatus", backref=db.backref("order_status", order_by=id))
     area = db.relationship("Area", backref=db.backref("areas", order_by=id))
 
-    #def init_order_no(self):
-     #   db.session.query(Order.id,db.func.count('*')).filter(Order.create_date=datetime.now)
+    
 
     def __repr__(self):
         return '<Order %r>' % self.order_no

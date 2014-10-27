@@ -87,8 +87,32 @@ def del_order():
 @login_required
 def check_order():
 	oid = request.form['oid']
-	Order.query.filter_by(id=oid).update({Order.status_id:2})
+	Order.query.filter_by(id=oid).update({Order.status_id:2,Order.update_date:datetime.now(),Order.update_man:current_user.id})
 	db.session.commit()
+	OrderProcess.save(oid,current_user.id,"审核订单")
+	return redirect(url_for('order.orders'))
+
+@order.route('/bug_order',methods=['POST'])
+@login_required
+def bug_order():
+	oid = request.form['oid']
+	issue_type = request.form['issue_type']
+	issue_memo = request.form['issue_memo']
+	Order.query.filter_by(id=oid).update({Order.is_issue:1,Order.issue_id:issue_type,Order.issue_memo:issue_memo, \
+										  Order.update_date:datetime.now(),Order.update_man:current_user.id})
+	db.session.commit()
+
+	OrderProcess.save(oid,current_user.id,u"标记为异常订单 异常信息为: %s" %issue_memo)
+	return redirect(url_for('order.orders'))
+
+@order.route('/unbug_order',methods=['POST'])
+@login_required
+def unbug_order():
+	oid = request.form['oid']
+	Order.query.filter_by(id=oid).update({Order.is_issue:0,Order.issue_id:None,Order.issue_memo:"", \
+										  Order.update_date:datetime.now(),Order.update_man:current_user.id})
+	db.session.commit()
+	OrderProcess.save(oid,current_user.id,"解除异常")
 	return redirect(url_for('order.orders'))
 
 @order.route('/_get_order/<gid>')
