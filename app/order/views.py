@@ -2,8 +2,9 @@
 from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request
-from flask.ext.login import login_required
-from ..models import OrderType,IssueType,Order,Area
+from flask.ext.login import login_required,current_user
+from ..models import OrderType,IssueType,Order,Area,OrderProcess
+from datetime import datetime
 from .. import db
 from . import order
 
@@ -39,9 +40,12 @@ def add_order():
 		            wangwang=wangwang,qq=qq,mobile=mobile,amount=amount, \
 		            paytype=paytype,memo=memo)
 	order.status_id=1
+	order.create_man = current_user.id
 	order.init_order_no()
 	db.session.add(order)
 	db.session.commit()
+
+	OrderProcess.save(order.id,current_user.id,"新增订单")
 	return redirect(url_for('order.orders'))
 
 @order.route('/update_order',methods=['POST'])
@@ -64,8 +68,10 @@ def update_order():
 	Order.query.filter_by(id=gid).update({Order.type_id:type_id,Order.area_id:area_id,Order.acter_name:acter_name, \
 										  Order.acter_account:acter_account,Order.acter_password:acter_password, \
 										  Order.start_level:start_level,Order.end_level:end_level,Order.wangwang:wangwang, \
-										  Order.qq:qq,Order.mobile:mobile,Order.amount:amount,Order.paytype:paytype,Order.memo:memo})
+										  Order.qq:qq,Order.mobile:mobile,Order.amount:amount,Order.paytype:paytype, \
+										  Order.memo:memo,Order.update_man:current_user.id,Order.update_date:datetime.now()})
 	db.session.commit()
+	OrderProcess.save(gid,current_user.id,"修改订单")
 	return redirect(url_for('order.orders'))
 
 @order.route('/del_order',methods=['POST'])

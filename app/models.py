@@ -189,8 +189,30 @@ class Order(db.Model):
         count = row.count+1
         self.order_no = datetime.now().strftime('%Y%m%d')+str(count).zfill(5)
 
-#        Match.query.filter(cast(Match.date_time_field, DATE)==date.today()).all()
+class OrderProcess(db.Model):
+    __tablename__ = "order_process"
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer,db.ForeignKey('orders.id'))
+    oper = db.Column(db.Integer,db.ForeignKey('users.id'))
+    oper_time = db.Column(db.DateTime,default=datetime.now)
+    remark = db.Column(db.String(128))    
 
+    def __repr__(self):
+        return '<OrderProcess %r>' % self.id
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'oper': self.oper,
+            'oper_time': self.oper_time,
+            'remark': self.remark,
+        }
+
+    @classmethod
+    def save(cls,oid,oper,remark):
+        process = OrderProcess(order_id=oid,oper=oper,oper_time=datetime.now(),remark=remark)
+        db.session.add(process)
+        db.session.commit()
 
 @login_manager.user_loader
 def user_loader(user_id):
