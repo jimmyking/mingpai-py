@@ -16,7 +16,29 @@ def orders():
 	issuetypes = IssueType.query.order_by('id').all()
 	areas = Area.query.order_by('id').all()
 	status = OrderStatus.query.order_by('id').all()
-	orders = Order.query.filter_by(is_delete=0).order_by('id').all()
+	order_query = Order.query.filter_by(is_delete=0)
+	order_no = request.args.get('order_no')
+	if order_no:
+		order_query = order_query.filter_by(order_no=order_no)
+	acter_name = request.args.get('acter_name')
+	if acter_name:
+		order_query = order_query.filter_by(acter_name=acter_name)
+	area_id = request.args.get('area_id')
+	if area_id and area_id !='0':
+		order_query = order_query.filter_by(area_id=area_id)
+	status_id = request.args.get('status_id')
+	if status_id and status_id !='0':
+		order_query = order_query.filter_by(status_id=status_id)
+	type_id = request.args.get('type_id')
+	if type_id and type_id !='0':
+		order_query = order_query.filter_by(type_id=type_id)
+	is_issue = request.args.get('is_issue')
+	if is_issue and is_issue =='1':
+		order_query = order_query.filter_by(is_issue=1)
+
+	orders = order_query.order_by('id').all()
+
+
 	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas,status=status)
 
 @order.route('/add_order',methods=['POST'])
