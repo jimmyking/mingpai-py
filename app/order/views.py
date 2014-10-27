@@ -82,6 +82,15 @@ def del_order():
 	db.session.commit()
 	return redirect(url_for('order.orders'))
 
+
+@order.route('/check_order',methods=['POST'])
+@login_required
+def check_order():
+	oid = request.form['oid']
+	Order.query.filter_by(id=oid).update({Order.status_id:2})
+	db.session.commit()
+	return redirect(url_for('order.orders'))
+
 @order.route('/_get_order/<gid>')
 def get_order(gid):
 	order = Order.query.filter_by(id=gid).first()
