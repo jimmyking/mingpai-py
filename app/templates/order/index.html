@@ -18,6 +18,58 @@
     <!-- Main content -->
     <section class="content">
 
+        <div class="box box-solid">
+          <div class="box-body">
+             <form action="#" method="get">
+             <div class="form-inline">
+              <div class="input-group">
+                          <span class="input-group-addon">订单号:</span>
+                          <input name="order_no" class="form-control">
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">角色名:</span>
+                          <input name="acter_name" class="form-control">
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">服务器:</span>
+                          <select name="area_id" class="form-control">
+                            <option value="0">所有</option>
+                            {% for ar in areas %}
+                            <option value="{{ ar.id }}">{{ ar.name }}</option>
+                            {% endfor %}
+                          </select>
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">订单状态:</span>
+                          <select name="status_id" class="form-control">
+                            <option value="0">所有</option>
+                            {% for st in status %}
+                            <option value="{{ st.id }}">{{ st.name }}</option>
+                            {% endfor %}
+                          </select>
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">订单类型:</span>
+                          <select name="type_id" class="form-control">
+                            <option value="0">所有</option>
+                            {% for ot in ordertypes %}
+                            <option value="{{ ot.id }}">{{ ot.name }}</option>
+                            {% endfor %}
+                          </select>
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">异常订单:</span>
+
+                          <input type="checkbox" value="1" name="is_issue" class="icheckbox_square-blue">
+              </div>
+              <div class="pull-right">
+              <button class="btn btn-warning">查询</button>
+              </div>
+             </div>
+             </form>
+          </div>
+        </div>
+
         <div class="row">
             <div class="col-md-12">
                 <div class="box">

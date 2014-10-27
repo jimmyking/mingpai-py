@@ -3,7 +3,7 @@ from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request
 from flask.ext.login import login_required,current_user
-from ..models import OrderType,IssueType,Order,Area,OrderProcess
+from ..models import OrderType,IssueType,Order,Area,OrderProcess,OrderStatus
 from datetime import datetime
 from .. import db
 from . import order
@@ -15,8 +15,9 @@ def orders():
 	ordertypes = OrderType.query.order_by('id').all()
 	issuetypes = IssueType.query.order_by('id').all()
 	areas = Area.query.order_by('id').all()
+	status = OrderStatus.query.order_by('id').all()
 	orders = Order.query.filter_by(is_delete=0).order_by('id').all()
-	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas)
+	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas,status=status)
 
 @order.route('/add_order',methods=['POST'])
 @login_required
