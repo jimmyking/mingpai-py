@@ -124,6 +124,52 @@ class OrderStatus(db.Model):
     def __repr__(self):
         return '<OrderStatus %r>' % self.name
 
+class OrderGrouop(db.Model):
+    __tablename__ = 'order_groups'
+    id = db.Column(db.Integer, primary_key=True)
+    group_type = db.Column(db.Integer)
+    area_id = db.Column(db.Integer,db.ForeignKey('areas.id'))
+    name = db.Column(db.String(64))
+    no = db.Column(db.Integer)
+    target = db.Column(db.String(64))
+    now_level = db.Column(db.Integer,default=0) 
+    status_id = db.Column(db.Integer,db.ForeignKey('order_status.id'))
+    create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    create_date = db.Column(db.DateTime,default=datetime.now,index=True)
+    update_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    update_date = db.Column(db.DateTime,default=datetime.now)
+
+    def __repr__(self):
+        return '<OrderGrouop %r>' % self.name
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'type': self.type,
+            'area_id': self.area_id,
+            'name': self.name,
+            'no': self.no,
+        }
+
+class OrderGroupProcess(db.Model):
+    __tablename__ = 'order_group_process'
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer,db.ForeignKey('order_groups.id'))
+    oper = db.Column(db.Integer,db.ForeignKey('users.id'))
+    oper_time = db.Column(db.DateTime,default=datetime.now)
+    remark = db.Column(db.String(128))    
+
+    def __repr__(self):
+        return '<OrderGroupProcess %r>' % self.id
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'oper': self.oper,
+            'oper_time': self.oper_time,
+            'remark': self.remark,
+        }
+
 
 class Order(db.Model):
     __tablename__ = 'orders'
@@ -152,6 +198,7 @@ class Order(db.Model):
     create_date = db.Column(db.DateTime,default=datetime.now,index=True)
     update_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     update_date = db.Column(db.DateTime,default=datetime.now)
+    group_id = db.Column(db.Integer,db.ForeignKey('order_groups.id'))
 
     order_type = db.relationship("OrderType", backref=db.backref("orders", order_by=id))
     order_status = db.relationship("OrderStatus", backref=db.backref("order_status", order_by=id))
@@ -212,7 +259,7 @@ class OrderProcess(db.Model):
         process = OrderProcess(order_id=oid,oper=oper,oper_time=datetime.now(),remark=remark)
         db.session.add(process)
         db.session.commit()
-
+        
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))

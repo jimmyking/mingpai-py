@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{% block head_css %}
+{{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/datepicker/datepicker3.css')}}">
+{% endblock %}
+
 {% block page_content %}
 
 <!-- Right side column. Contains the navbar and content of the page -->
@@ -57,7 +62,10 @@
                             {% endfor %}
                           </select>
               </div>
-              <div class="input-group">
+              
+             </div>
+             <div class="form-inline inline-form-magin">
+             <div class="input-group">
                           <span class="input-group-addon">异常订单:</span>
 
                           <input type="checkbox" value="1" name="is_issue" class="icheckbox_square-blue" {% if request.args.get('is_issue') | int == 1 %}checked="true"{% endif %}>
@@ -65,7 +73,7 @@
               <div class="pull-right">
               <button class="btn btn-warning">查询</button>
               </div>
-             </div>
+              </div>
              </form>
           </div>
         </div>
@@ -80,7 +88,11 @@
                             <h3 class="box-title">订单处理列表</h3>
                             <span class="pull-right">
                               <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add-user-modal"><i class='fa fa-plus'></i></button>
+
+                              <button type="button" class="btn btn-info group-order"><i class='fa fa-truck'></i></button>
+
                               <button type="button" class="btn btn-danger mutiple-delete-user"><i class='fa fa-trash-o'></i></button>
+
                             </span>
                         </div><!-- /.box-header -->
                         
@@ -113,26 +125,27 @@
                               <tr style="background-color: {% if order.is_issue %} #ff0000  {% else %} {{ order.order_type.color }}  {% endif %}">
                                   <td>
                                     <input type="checkbox" value="{{ order.id }}" class="minimal-red check-item"/>
-                                   
+                                    
                                   </td>
                                  
-                                  <th>{{ order.order_no}}</th>
-                                  <th>{{ order.order_type.name}}</th>
-                                  <th>{{ order.order_status.name}}</th>
-                                  <th>{{ order.area.name}}</th>
-                                  <th>{{ order.acter_name }}</th>
-                                  <th>{{ order.acter_account }}</th>
-                                  <th>{{ order.acter_password }}</th>
-                                  <th>{{ order.start_level }}</th>
-                                  <th>{{ order.end_level }}</th>
-                                  <th>{{ order.now_level }}</th>
-                                  <th>{{ order.wangwang }}</th>
-                                  <th>{{ order.qq }}</th>
-                                  <th>{{ order.mobile }}</th>
-                                  <th>{{ order.amount }}</th>
-                                  <th>{{ order.paytype }}</th>
+                                  <td>{{ order.order_no}}</td>
+                                  <td>{{ order.order_type.name}}</td>
+                                  <td>{{ order.order_status.name}}</td>
+                                  <td>{{ order.area.name}}</td>
+                                  <td>{{ order.acter_name }}</td>
+                                  <td>{{ order.acter_account }}</td>
+                                  <td>{{ order.acter_password }}</td>
+                                  <td>{{ order.start_level }}</td>
+                                  <td>{{ order.end_level }}</td>
+                                  <td>{{ order.now_level }}</td>
+                                  <td>{{ order.wangwang }}</td>
+                                  <td>{{ order.qq }}</td>
+                                  <td>{{ order.mobile }}</td>
+                                  <td>{{ order.amount }}</td>
+                                  <td>{{ order.paytype }}</td>
                                   
-                                  <td>       
+                                  <td>  
+                                        <input type="hidden" class="area_id" value="{{ order.area.id }}">     
                                         <button type="button" class="btn btn-default edit-user">
                                             <i class='fa fa-wrench'></i>
                                         </button>
@@ -522,11 +535,41 @@
 </div><!-- /.modal -->
 
 
+<div class="modal fade bs-example-modal-sm" id="group-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">分配团练订单 </h4>
+            </div>
+            <form action="{{ url_for('order.unbug_order')}}" method="post">
+                <div class="modal-body">
+                  <div class="input-group" style="z-index:999999;">
+                      <span class="input-group-addon">分区:</span>
+                      <input name="group-area-name" class="form-control" id="group-area-name" readonly="true">
+                      <input type="hidden" name="group-area-id" id="group-name-id">
+                  </div>
+                  <div class="input-group" style="z-index:999999;margin-top:10px;">
+                      <span class="input-group-addon">团练日期:</span>
+                      <input name="group-name" class="form-control datepicker" data-date="2014-11-01" data-date-format="yyyy-mm-dd" id="group-name" readonly="true">
+                  </div>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
 {% endblock %}
 
 {% block foot_js %}
     {{ super() }}
-
+<script type="text/javascript" src="{{ url_for('static',filename='js/datepicker/bootstrap-datepicker.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/datepicker/locales/bootstrap-datepicker.zh-CN.js')}}"></script>
 <script type="text/javascript">
      $(function() {
        
@@ -539,6 +582,8 @@
            $(".check-item").iCheck('uncheck');
          }
        });
+
+       $('.datepicker').datepicker({language:'zh-CN'});
        
        
        $(".edit-user").on("click",function(){
@@ -598,6 +643,42 @@
             $('#gids').val(uids);
             $('#del-user-modal').modal();
          }
+       });
+
+       $(".group-order").on("click",function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var area_array = new Array();
+         show = true;
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             area_id = $(element).parent().parent().siblings().find('.area_id').val()
+             area_array.push(area_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要分组的订单");
+          }else{ 
+            area_temp = area_array[0]
+            for(var i=0; i<area_array.length; i++){
+              if(area_array[i] != area_temp){
+                alert("您选择的订单区服存在差异，请重新选择!");
+                return;
+              }
+            }
+            $.getJSON('/game/_get_area/'+area_temp,function(data){
+              $('#group-area-id').val(data.id);
+              $('#group-area-name').val(data.username);
+              uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+              $('#gids').val(uids);
+              $("#group-order-modal").modal();
+            });           
+          }
+         
+         
+          
        });
       
      });

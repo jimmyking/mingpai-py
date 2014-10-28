@@ -103,6 +103,7 @@ def del_order():
 	gids = request.form['gids']
 	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.is_delete:1},synchronize_session=False)
 	db.session.commit()
+	
 	return redirect(url_for('order.orders'))
 
 
