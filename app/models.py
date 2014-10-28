@@ -281,6 +281,12 @@ class GroupTask(db.Model):
     def __repr__(self):
         return '<GroupTask %r>' % self.id
 
+    def to_json(self):
+        return {
+            'id': self.id,
+            'type': self.type,
+            'name': self.name,
+        }
 
 @login_manager.user_loader
 def user_loader(user_id):

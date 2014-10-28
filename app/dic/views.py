@@ -3,7 +3,7 @@ from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request
 from flask.ext.login import login_required
-from ..models import OrderType,IssueType
+from ..models import OrderType,IssueType,GroupTask
 from .. import db
 from . import dic
 
@@ -80,6 +80,48 @@ def update_issuetype():
 def get_issuetype(gid):
 	issuetype = IssueType.query.filter_by(id=gid).first()
 	return jsonify(issuetype.to_json())
+
+
+#任务类型管理
+@dic.route('/tasktypes')
+@login_required
+def tasktypes():
+	tasktypes = GroupTask.query.order_by('id').all()
+	return render_template('dic/group_tasks.html',tasktypes=tasktypes)
+
+@dic.route('/add_tasktype',methods=['POST'])
+@login_required
+def add_tasktype():
+	tasktype = GroupTask(type=request.form['type'],name=request.form['name'])
+	db.session.add(tasktype)
+	db.session.commit()
+	return redirect(url_for('dic.tasktypes'))
+
+@dic.route('/del_tasktype',methods=['POST'])
+@login_required
+def del_tasktype():
+	gids = request.form['gids']
+	GroupTask.query.filter(GroupTask.id.in_(gids.split(','))).delete(synchronize_session=False)
+	return redirect(url_for('dic.tasktypes'))
+
+@dic.route('/update_tasktype',methods=['POST'])
+@login_required
+def update_tasktype():
+	gid = request.form['id']
+	name = request.form['name']
+	type=request.form['type']
+	GroupTask.query.filter_by(id=gid).update({GroupTask.name:name,GroupTask.type:type})
+	db.session.commit()
+	return redirect(url_for('dic.tasktypes'))
+
+@dic.route('/_get_tasktype/<gid>')
+def get_tasktype(gid):
+	tasktype = GroupTask.query.filter_by(id=gid).first()
+	return jsonify(tasktype.to_json())
+
+
+
+
 
 
 
