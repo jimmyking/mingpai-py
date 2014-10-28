@@ -272,6 +272,16 @@ class OrderProcess(db.Model):
         db.session.add(process)
         db.session.commit()
 
+class GroupTask(db.Model):
+    __tablename__ = "group_tasks"
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Integer)
+    name = db.Column(db.String(64))
+
+    def __repr__(self):
+        return '<GroupTask %r>' % self.id
+
+
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
