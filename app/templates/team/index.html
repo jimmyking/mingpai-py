@@ -89,7 +89,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">订单列表 </h4>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col-md-4 pull-right">
+                    <div class="col-md-5 pull-right">
                         <form action="/team/update_level" method="post">
                             <div class="form-inline">
                                 <div class="input-group">
@@ -98,13 +98,20 @@
                                     <input name="tid" id="team-level-id" type="hidden" class="form-control">
                                 </div>
                                 <div class="input-group">
-                                    
                                     <button class="btn btn-success">更新</button>
                                 </div>
                             </div>
                         </form>
                     </div>
-                    
+                </div>
+
+
+                <div class="row" style="margin-top:10px;">
+                   {% for task in tasks %}
+                    <div class="col-md-1">
+                        <button class="btn btn-success">{{ task.name }}</button>
+                    </div>
+                    {% endfor %}
                 </div>
             </div>
             <div class="modal-body">
