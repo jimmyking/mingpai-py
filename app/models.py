@@ -139,16 +139,22 @@ class OrderGroup(db.Model):
     update_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     update_date = db.Column(db.DateTime,default=datetime.now)
 
+    status = db.relationship("OrderStatus", backref=db.backref("group_status", order_by=id))
+    area = db.relationship("Area", backref=db.backref("group_areas", order_by=id))
+
     def __repr__(self):
         return '<OrderGrouop %r>' % self.name
 
     def to_json(self):
         return {
             'id': self.id,
-            'type': self.type,
-            'area_id': self.area_id,
+            'type': self.group_type,
+            'area_id': self.area.id,
+            'area_name': self.area.name,
             'name': self.name,
             'no': self.no,
+            'target': self.target,
+            'now_level': self.now_level,
         }
 
 class OrderGroupProcess(db.Model):

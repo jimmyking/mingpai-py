@@ -11,7 +11,8 @@ from . import team
 @team.route('/')
 @login_required
 def index():
-	pass
+	teams =  OrderGroup.query.filter_by(group_type=0).filter(OrderGroup.status_id.in_([3,4])).all()
+	return render_template('team/index.html',teams=teams)
 
 @team.route('/add_team',methods=['POST'])
 @login_required
@@ -39,6 +40,70 @@ def add_team():
 	area = Area.query.filter_by(id=area_id).first()
 
 	for oid in oids.split(','):
-		OrderProcess.save(oid,current_user.id,u"分配到: %s%s%d组" %(name,area.name,no))
+		OrderProcess.save(oid,current_user.id,(u"分配到: %s%s%d组" %(name,area.name,no)))
 
 	return redirect(url_for('order.orders'))
+
+@team.route('/start_team',methods=['POST'])
+@login_required
+def start_team():
+	tid = request.form['tid']
+	OrderGroup.query.filter_by(id=tid).update({OrderGroup.status_id:4,OrderGroup.update_man:current_user.id, \
+											   OrderGroup.update_date:datetime.now()},synchronize_session=False)
+	OrderGroupProcess.save(tid,current_user.id,"开始团练")
+	Order.query.filter_by(group_id=tid).update({Order.status_id:4, \
+		                                            Order.update_man:current_user.id, \
+		                                            Order.update_date:datetime.now()},synchronize_session=False)
+	orders = Order.query.filter_by(group_id=tid).all()
+	for order in orders:
+		OrderProcess.save(order.id,current_user.id,"开始团练")
+	db.session.commit()
+	return redirect(url_for('team.index'))
+
+@team.route('/stop_team',methods=['POST'])
+@login_required
+def stop_team():
+	tid = request.form['tid']
+	OrderGroup.query.filter_by(id=tid).update({OrderGroup.status_id:5,OrderGroup.update_man:current_user.id, \
+											   OrderGroup.update_date:datetime.now()},synchronize_session=False)
+	OrderGroupProcess.save(tid,current_user.id,"团练完成")
+	Order.query.filter_by(group_id=tid).update({Order.status_id:5, \
+		                                            Order.update_man:current_user.id, \
+		                                            Order.update_date:datetime.now()},synchronize_session=False)
+	orders = Order.query.filter_by(group_id=tid).all()
+	for order in orders:
+		OrderProcess.save(order.id,current_user.id,"团练完成")
+	db.session.commit()
+	return redirect(url_for('team.index'))
+
+@team.route('/update_level',methods=['POST'])
+@login_required
+def update_level():
+	tid = request.form['tid']
+	team = OrderGroup.query.filter_by(id=tid).first()
+	if team.status_id !=4:
+		return redirect(url_for('team.index'))
+	level = request.form['level']
+	OrderGroup.query.filter_by(id=tid).update({OrderGroup.now_level:level,OrderGroup.update_man:current_user.id, \
+											   OrderGroup.update_date:datetime.now()},synchronize_session=False)
+	OrderGroupProcess.save(tid,current_user.id,u"更新进度到 %s" % level)
+	Order.query.filter_by(group_id=tid).update({Order.now_level:level, \
+		                                            Order.update_man:current_user.id, \
+		                                            Order.update_date:datetime.now()},synchronize_session=False)
+	orders = Order.query.filter_by(group_id=tid).all()
+	for order in orders:
+		OrderProcess.save(order.id,current_user.id,u"更新进度到 %s" % level)
+	db.session.commit()
+	return redirect(url_for('team.index'))
+
+@team.route('/_get_team_orders/<tid>')
+@login_required
+def get_team_orders(tid):
+	orders = Order.query.filter_by(group_id=tid).all()
+	return render_template('team/orders.html',orders=orders)
+
+@team.route('/_get_team/<tid>')
+@login_required
+def get_team(tid):
+	team = OrderGroup.query.filter_by(id=tid).first()
+	return jsonify(team.to_json())

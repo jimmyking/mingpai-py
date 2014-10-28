@@ -3545,6 +3545,11 @@ fieldset[disabled] .btn-vk.active {
 .modal-big {
   width: 815px;
 }
+
+.modal-big-max {
+  width: 1000px;
+}
+
 .inline-form-magin {
   margin-top:10px;
 }
