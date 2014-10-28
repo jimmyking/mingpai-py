@@ -33,5 +33,8 @@ def create_app(config_name):
     from .order import order as order_blueprint
     app.register_blueprint(order_blueprint, url_prefix='/order')
 
+    from .team import team as team_blueprint
+    app.register_blueprint(team_blueprint, url_prefix='/team')
+
     return app
 

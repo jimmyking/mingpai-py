@@ -145,7 +145,8 @@
                                   <td>{{ order.paytype }}</td>
                                   
                                   <td>  
-                                        <input type="hidden" class="area_id" value="{{ order.area.id }}">     
+                                        <input type="hidden" class="area_id" value="{{ order.area.id }}">
+                                        <input type="hidden" class="status_id" value="{{ order.order_status.id }}">    
                                         <button type="button" class="btn btn-default edit-user">
                                             <i class='fa fa-wrench'></i>
                                         </button>
@@ -247,13 +248,13 @@
 
                          <div class="input-group">
                           <span class="input-group-addon">当前等级:</span>
-                          <input name="start_level" class="form-control long-input">
+                          <input name="start_level" class="form-control long-input" value="0">
                         </div>
                         <div class="input-group" style="width:200px;">
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">需求等级:</span>
-                          <input name="end_level" class="form-control">
+                          <input name="end_level" class="form-control" value="0">
                         </div>
                         
                       </div>
@@ -542,16 +543,21 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">分配团练订单 </h4>
             </div>
-            <form action="{{ url_for('order.unbug_order')}}" method="post">
+            <form action="{{ url_for('team.add_team')}}" method="post">
+                <input type="hidden" name="group-order-ids" id="group-order-ids">
                 <div class="modal-body">
-                  <div class="input-group" style="z-index:999999;">
+                  <div class="input-group">
                       <span class="input-group-addon">分区:</span>
                       <input name="group-area-name" class="form-control" id="group-area-name" readonly="true">
-                      <input type="hidden" name="group-area-id" id="group-name-id">
+                      <input type="hidden" name="group-area-id" id="group-area-id">
                   </div>
                   <div class="input-group" style="z-index:999999;margin-top:10px;">
                       <span class="input-group-addon">团练日期:</span>
                       <input name="group-name" class="form-control datepicker" data-date="2014-11-01" data-date-format="yyyy-mm-dd" id="group-name" readonly="true">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
+                      <span class="input-group-addon">目标级别:</span>
+                      <input name="group-target" class="form-control" value="0">
                   </div>
                 </div>
                 <div class="modal-footer clearfix">
@@ -649,12 +655,15 @@
          var item_size = $(".check-item").size();
          var checked_items = new Array();
          var area_array = new Array();
+         var status_array = new Array();
          show = true;
          $(".check-item").each(function(index,element){
            if(element.checked){
              checked_items.push(element);
              area_id = $(element).parent().parent().siblings().find('.area_id').val()
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
              area_array.push(area_id)
+             status_array.push(status_id)
             }
          });
          
@@ -668,11 +677,17 @@
                 return;
               }
             }
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] != 2){
+                alert("只有已审核的订单才能分配!");
+                return;
+              }
+            }
             $.getJSON('/game/_get_area/'+area_temp,function(data){
               $('#group-area-id').val(data.id);
               $('#group-area-name').val(data.username);
               uids = $(checked_items).map(function(){return $(this).val()}).get().join();
-              $('#gids').val(uids);
+              $('#group-order-ids').val(uids);
               $("#group-order-modal").modal();
             });           
           }

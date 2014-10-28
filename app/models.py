@@ -124,7 +124,7 @@ class OrderStatus(db.Model):
     def __repr__(self):
         return '<OrderStatus %r>' % self.name
 
-class OrderGrouop(db.Model):
+class OrderGroup(db.Model):
     __tablename__ = 'order_groups'
     id = db.Column(db.Integer, primary_key=True)
     group_type = db.Column(db.Integer)
@@ -169,6 +169,12 @@ class OrderGroupProcess(db.Model):
             'oper_time': self.oper_time,
             'remark': self.remark,
         }
+
+    @classmethod
+    def save(cls,oid,oper,remark):
+        process = OrderGroupProcess(group_id=oid,oper=oper,oper_time=datetime.now(),remark=remark)
+        db.session.add(process)
+        db.session.commit()
 
 
 class Order(db.Model):
@@ -259,7 +265,7 @@ class OrderProcess(db.Model):
         process = OrderProcess(order_id=oid,oper=oper,oper_time=datetime.now(),remark=remark)
         db.session.add(process)
         db.session.commit()
-        
+
 @login_manager.user_loader
 def user_loader(user_id):
     return User.query.get(int(user_id))
