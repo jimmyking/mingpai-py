@@ -141,6 +141,7 @@ class OrderGroup(db.Model):
 
     status = db.relationship("OrderStatus", backref=db.backref("group_status", order_by=id))
     area = db.relationship("Area", backref=db.backref("group_areas", order_by=id))
+    tasks = db.relationship('OrderGroupTask', backref='order_group',lazy='dynamic')
 
     def __repr__(self):
         return '<OrderGrouop %r>' % self.name
@@ -156,6 +157,23 @@ class OrderGroup(db.Model):
             'target': self.target,
             'now_level': self.now_level,
         }
+
+class OrderGroupTask(db.Model):
+    __tablename__ = 'order_group_tasks'
+    id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer,db.ForeignKey('order_groups.id'))
+    task_id = db.Column(db.Integer,db.ForeignKey('group_tasks.id'))
+    create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    create_date = db.Column(db.DateTime,default=datetime.now,index=True)
+
+    def __repr__(self):
+        return '<OrderGroupTask %r>' % self.id
+
+    @classmethod
+    def save(cls,gid,tid,oper):
+        task = OrderGroupTask(group_id=gid,task_id=tid,create_man=oper,create_date=datetime.now())
+        db.session.add(task)
+        db.session.commit()
 
 class OrderGroupProcess(db.Model):
     __tablename__ = 'order_group_process'
@@ -246,6 +264,24 @@ class Order(db.Model):
         row = db.session.query(Order.id,db.func.count('*').label('count')).filter(db.cast(Order.create_date,db.DATE)==date.today()).first()
         count = row.count+1
         self.order_no = datetime.now().strftime('%Y%m%d')+str(count).zfill(5)
+
+
+class OrderTask(db.Model):
+    __tablename__ = 'order_tasks'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer,db.ForeignKey('orders.id'))
+    task_id = db.Column(db.Integer,db.ForeignKey('group_tasks.id'))
+    create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    create_date = db.Column(db.DateTime,default=datetime.now,index=True)
+
+    def __repr__(self):
+        return '<OrderGroupTask %r>' % self.id
+
+    @classmethod
+    def save(cls,oid,tid,oper):
+        task = OrderTask(order_id=oid,task_id=tid,create_man=oper,create_date=datetime.now())
+        db.session.add(task)
+        db.session.commit()
 
 class OrderProcess(db.Model):
     __tablename__ = "order_process"

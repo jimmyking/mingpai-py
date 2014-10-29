@@ -4,7 +4,7 @@ from flask import jsonify
 from flask import request
 from flask.ext.login import login_required,current_user
 from ..models import Order,Area,OrderProcess,OrderStatus,OrderGroup,OrderGroupProcess
-from ..models import GroupTask
+from ..models import GroupTask,OrderTask,OrderGroupTask
 from datetime import datetime
 from .. import db
 from . import team
@@ -97,6 +97,31 @@ def update_level():
 		OrderProcess.save(order.id,current_user.id,u"更新进度到 %s" % level)
 	db.session.commit()
 	return redirect(url_for('team.index'))
+
+
+@team.route('/update_task',methods=['POST'])
+@login_required
+def update_task():
+	gid = request.form['group_id']
+	tid = request.form['task_id']
+	team = OrderGroup.query.filter_by(id=gid).first()
+	task = GroupTask.query.filter_by(id=tid).first()
+	if team.status_id !=4:
+		return redirect(url_for('team.index'))
+	
+	OrderGroup.query.filter_by(id=gid).update({OrderGroup.update_man:current_user.id, \
+											   OrderGroup.update_date:datetime.now()},synchronize_session=False)
+	OrderGroupProcess.save(gid,current_user.id,u"完成任务 %s" % task.name)
+	OrderGroupTask.save(gid,tid,current_user.id)
+	Order.query.filter_by(group_id=gid).update({Order.update_man:current_user.id, \
+		                                        Order.update_date:datetime.now()},synchronize_session=False)
+	orders = Order.query.filter_by(group_id=gid).all()
+	for order in orders:
+		OrderProcess.save(order.id,current_user.id,u"完成任务 %s" % task.name)
+		OrderTask.save(order.id,tid,current_user.id)
+	db.session.commit()
+	return redirect(url_for('team.index'))
+
 
 @team.route('/_get_team_orders/<tid>')
 @login_required

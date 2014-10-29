@@ -7,11 +7,11 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
         <h1>
-            团练中心
+            任务处理中心
         </h1>
         <ol class="breadcrumb">
             <li><a href="{{ url_for('main.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
-            <li class="active"><a href="{{ url_for('team.index') }}">团练中心</a></li>
+            <li class="active"><a href="{{ url_for('task.index') }}">任务处理中心</a></li>
         </ol>
     </section>
 
@@ -24,16 +24,16 @@
                     <div class="box-body">
 
                         <div class="box-header">
-                            <h3 class="box-title">团练列表</h3>
+                            <h3 class="box-title">任务组列表</h3>
                             
                         </div><!-- /.box-header -->
 
                         <table class="table table-bordered table-hover">
                             <tr>
-                                <th>日期</th>
-                                <th>区服</th>
+                                <th>组别</th>
+                                
                                 <th>编号</th>
-                                <th>目标</th>
+                                
                                 <th>进度</th>
                                 <th>状态</th>
                                 <th style="width: 200px">操作</th>
@@ -44,9 +44,9 @@
                                     {{ team.name }}
                                     <input type="hidden" class="team-id" value="{{ team.id }}">
                                 </td>
-                                <td>{{ team.area.name}}</td>
+                                
                                 <td>{{ team.no}}</td>
-                                <td>{{ team.target}}</td>
+                                
                                 <td>{{ team.now_level}}</td>
                                 <td>{{ team.status.name }}</td>                                
                                 <td>       

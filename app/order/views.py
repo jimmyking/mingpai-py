@@ -139,6 +139,17 @@ def unbug_order():
 	OrderProcess.save(oid,current_user.id,"解除异常")
 	return redirect(url_for('order.orders'))
 
+@order.route('/wait_task',methods=['POST'])
+@login_required
+def wait_task():
+	gids = request.form['gids']
+	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.status_id:6},synchronize_session=False)
+	for oid in gids.split(','):
+		OrderProcess.save(oid,current_user.id,"修改状态至转任务组")
+	db.session.commit()
+	
+	return redirect(url_for('order.orders'))
+
 @order.route('/_get_order/<gid>')
 def get_order(gid):
 	order = Order.query.filter_by(id=gid).first()

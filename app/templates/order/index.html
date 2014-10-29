@@ -91,7 +91,16 @@
 
                               <button type="button" class="btn btn-info group-order"><i class='fa fa-truck'></i></button>
 
+                              <button type="button" class="btn btn-info order-to-task">
+                                            <i class='fa fa-share'></i>
+                                </button>
+
+                              <button type="button" class="btn btn-info task-order">
+                                            <i class='fa fa-tasks'></i>
+                                </button>
                               <button type="button" class="btn btn-danger mutiple-delete-user"><i class='fa fa-trash-o'></i></button>
+
+                              
 
                             </span>
                         </div><!-- /.box-header -->
@@ -165,6 +174,8 @@
                                             <i class='fa fa-bug'></i>
                                           </button>
                                         {% endif %}
+
+
                                         
                                        
 
@@ -569,6 +580,56 @@
 </div><!-- /.modal -->
 
 
+<div class="modal fade bs-example-modal-sm" id="order-to-task-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">订单转任务组 </h4>
+            </div>
+            <form action="{{ url_for('order.wait_task')}}" method="post">
+                <div class="modal-body">
+                  是否确认这些订单转任务组
+                  <input type="hidden" id="wait-task-gids" name="gids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade bs-example-modal-sm" id="task-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">分配任务订单 </h4>
+            </div>
+            <form action="{{ url_for('task.add_team')}}" method="post">
+                <input type="hidden" name="oids" id="task-order-ids">
+                <div class="modal-body">
+                  
+                  <div class="input-group" style="z-index:999999;margin-top:10px;">
+                      <span class="input-group-addon">组号:</span>
+                      <input name="name" class="form-control" value="1">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
+                      <span class="input-group-addon">机器号:</span>
+                      <input name="no" class="form-control" value="1">
+                  </div>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 
 {% endblock %}
 
@@ -691,10 +752,66 @@
               $("#group-order-modal").modal();
             });           
           }
-         
-         
-          
        });
+
+       $('.order-to-task').on('click',function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要处理的订单");
+          }else{ 
+            
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] == 2 || status_array[i] == 5){
+                
+              }else{
+                alert("只有已审核或团练完成的订单才能转任务组!");
+                return;
+              }
+            }
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#wait-task-gids').val(uids);
+            $("#order-to-task-modal").modal();    
+          }
+       });
+
+        $(".task-order").on("click",function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         show = true;
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要分配的订单");
+          }else{ 
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] != 6){
+                alert("只有已审核的订单才能分配!");
+                return;
+              }
+            }
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#task-order-ids').val(uids);
+            $("#task-order-modal").modal();        
+          }
+       });
+
       
      });
    </script>
