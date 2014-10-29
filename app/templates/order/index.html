@@ -624,14 +624,17 @@
             <form action="{{ url_for('task.add_team')}}" method="post">
                 <input type="hidden" name="oids" id="task-order-ids">
                 <div class="modal-body">
-                  
-                  <div class="input-group" style="z-index:999999;margin-top:10px;">
+                  <div class="input-group" style="z-index:999999;">
+                      <span class="input-group-addon">日期:</span>
+                      <input name="name" class="form-control datepicker" data-date="2014-11-01" data-date-format="yyyy-mm-dd" id="group-name" readonly="true">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
                       <span class="input-group-addon">组号:</span>
-                      <input name="name" class="form-control" value="1">
+                      <input name="no" class="form-control" value="1">
                   </div>
                   <div class="input-group" style="margin-top:10px;">
                       <span class="input-group-addon">机器号:</span>
-                      <input name="no" class="form-control" value="1">
+                      <input name="target" class="form-control" value="1">
                   </div>
                 </div>
                 <div class="modal-footer clearfix">
@@ -815,7 +818,7 @@
           }else{ 
             for(var i=0; i<status_array.length; i++){
               if(status_array[i] != 6){
-                alert("只有已审核的订单才能分配!");
+                alert("只有转任务组的订单才能分配!");
                 return;
               }
             }

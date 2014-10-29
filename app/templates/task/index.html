@@ -30,10 +30,9 @@
 
                         <table class="table table-bordered table-hover">
                             <tr>
+                                <th>日期</th>
                                 <th>组别</th>
-                                
                                 <th>编号</th>
-                                
                                 <th>进度</th>
                                 <th>状态</th>
                                 <th style="width: 200px">操作</th>
@@ -46,6 +45,7 @@
                                 </td>
                                 
                                 <td>{{ team.no}}</td>
+                                <td>{{ team.target}}</td>
                                 
                                 <td>
                                   {% for task in team.tasks %}
@@ -196,7 +196,7 @@
         $('.view-team').on("click",function(){
             selected_id = $(this).parent().siblings().find('.team-id').val();
             $.getJSON('/task/_get_team/'+selected_id,function(data){
-                $('.modal-title').html(data.name+"组"+data.no+"号机");
+                $('.modal-title').html(data.name+"   "+data.no+"组"+data.target+"号机");
                 $('.task-group-id').val(data.id);
                 $.get('/team/_get_team_orders/'+selected_id,function(data){
                     //alert(data);

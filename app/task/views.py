@@ -23,8 +23,8 @@ def add_team():
 	oids = request.form['oids']
 	name = request.form['name']
 	no = request.form['no']
-	
-	team = OrderGroup(group_type=1,name=name,no=no,status_id=7, \
+	target = request.form['target']
+	team = OrderGroup(group_type=1,name=name,no=no,target=target,status_id=7, \
 		             create_man=current_user.id)
 	db.session.add(team)
 	db.session.commit()
@@ -35,7 +35,7 @@ def add_team():
 		                                                      Order.update_date:datetime.now()},synchronize_session=False)
 	db.session.commit()
 	for oid in oids.split(','):
-		OrderProcess.save(oid,current_user.id,(u"分配到: %s组%s号机" %(name,no)))
+		OrderProcess.save(oid,current_user.id,(u"分配到: %s  %s组%s号机" %(name,no,target)))
 
 	return redirect(url_for('order.orders'))
 

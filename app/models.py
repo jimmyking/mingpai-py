@@ -164,6 +164,7 @@ class OrderGroup(db.Model):
             'type': self.group_type,
             'name': self.name,
             'no': self.no,
+            'target': self.target,
         }
 
 class OrderGroupTask(db.Model):
