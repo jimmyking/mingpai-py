@@ -158,6 +158,14 @@ class OrderGroup(db.Model):
             'now_level': self.now_level,
         }
 
+    def to_task_json(self):
+        return {
+            'id': self.id,
+            'type': self.group_type,
+            'name': self.name,
+            'no': self.no,
+        }
+
 class OrderGroupTask(db.Model):
     __tablename__ = 'order_group_tasks'
     id = db.Column(db.Integer, primary_key=True)
@@ -165,6 +173,8 @@ class OrderGroupTask(db.Model):
     task_id = db.Column(db.Integer,db.ForeignKey('group_tasks.id'))
     create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     create_date = db.Column(db.DateTime,default=datetime.now,index=True)
+
+    task = db.relationship("GroupTask", backref=db.backref("group_task", order_by=id))
 
     def __repr__(self):
         return '<OrderGroupTask %r>' % self.id

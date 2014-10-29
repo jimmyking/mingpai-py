@@ -47,19 +47,23 @@
                                 
                                 <td>{{ team.no}}</td>
                                 
-                                <td>{{ team.now_level}}</td>
+                                <td>
+                                  {% for task in team.tasks %}
+                                    {{ task.task.name }},
+                                  {% endfor %}
+                                </td>
                                 <td>{{ team.status.name }}</td>                                
                                 <td>       
                                     <button type="button" class="btn btn-default view-team">
                                         <i class='fa fa-eye'></i>
                                     </button>
-                                    {% if team.status.id == 3 %}
+                                    {% if team.status.id == 7 %}
                                     <button type="button" class="btn btn-default start-team">
                                         <i class='fa fa-play'></i>
                                     </button>
                                     {% endif %}
 
-                                    {% if team.status.id == 4 %}
+                                    {% if team.status.id == 8 %}
                                     <button type="button" class="btn btn-default stop-team">
                                         <i class='fa fa-stop'></i>
                                     </button>
@@ -89,27 +93,9 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">订单列表 </h4>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col-md-5 pull-right">
-                        <form action="/team/update_level" method="post">
-                            <div class="form-inline">
-                                <div class="input-group">
-                                    <span class="input-group-addon">进度:</span>
-                                    <input name="level" id="team-level" value="" class="form-control">
-                                    <input name="tid" id="team-level-id" type="hidden" class="form-control">
-                                </div>
-                                <div class="input-group">
-                                    <button class="btn btn-success">更新</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-
-
-                <div class="row" style="margin-top:10px;">
                    {% for task in tasks %}
                     <div class="col-md-1">
-                        <form action="{{ url_for('team.update_task') }}" method="post">
+                        <form action="{{ url_for('task.update_task') }}" method="post">
                         <input type="hidden" name="task_id" value="{{ task.id }}">
                         <input type="hidden" name="group_id" class="task-group-id">
                         <button class="btn btn-success" id="group-task-btn{{task.id}}">{{ task.name }}</button>
@@ -145,11 +131,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">开始团练 </h4>
+                <h4 class="modal-title">开始任务 </h4>
             </div>
-            <form action="{{ url_for('team.start_team')}}" method="post">
+            <form action="{{ url_for('task.start_task')}}" method="post">
                 <div class="modal-body">
-                  是否开始团练
+                  是否开始任务
                   <input type="hidden" id="tid" name="tid"/>
                 </div>
                 <div class="modal-footer clearfix">
@@ -166,11 +152,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">结束团练 </h4>
+                <h4 class="modal-title">结束任务 </h4>
             </div>
-            <form action="{{ url_for('team.stop_team')}}" method="post">
+            <form action="{{ url_for('task.stop_task')}}" method="post">
                 <div class="modal-body">
-                  是否结束团练
+                  是否结束任务
                   <input type="hidden" id="stop-tid" name="tid"/>
                 </div>
                 <div class="modal-footer clearfix">
@@ -209,10 +195,8 @@
 
         $('.view-team').on("click",function(){
             selected_id = $(this).parent().siblings().find('.team-id').val();
-            $.getJSON('/team/_get_team/'+selected_id,function(data){
-                $('.modal-title').html(data.name+data.area_name+data.no+"组    目标:"+data.target+"级");
-                $('#team-level').val(data.now_level);
-                $('#team-level-id').val(data.id);
+            $.getJSON('/task/_get_team/'+selected_id,function(data){
+                $('.modal-title').html(data.name+"组"+data.no+"号机");
                 $('.task-group-id').val(data.id);
                 $.get('/team/_get_team_orders/'+selected_id,function(data){
                     //alert(data);
