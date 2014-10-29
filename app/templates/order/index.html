@@ -99,6 +99,19 @@
                                             <i class='fa fa-tasks'></i>
                                 </button>
                               <button type="button" class="btn btn-danger mutiple-delete-user"><i class='fa fa-trash-o'></i></button>
+                            
+                              <form action="{{ url_for('order.export') }}" method="get" style="margin:0px;display: inline">
+                              <input type="hidden" name="order_no" value="{% if request.args.get('order_no') != None %}{{ request.args.get('order_no') }}{% endif %}">
+                              <input type="hidden" name="acter_name" value="{% if request.args.get('acter_name') != None %}{{ request.args.get('acter_name') }}{% endif %}">
+                              <input type="hidden" name="area_id" value="{{ request.args.get('area_id') }}">
+                              <input type="hidden" name="status_id" value="{{ request.args.get('status_id') }}">
+                              <input type="hidden" name="type_id" value="{{ request.args.get('type_id') }}">
+                              <input type="hidden" name="is_issue" value="{% if request.args.get('is_issue') != None %}{{ request.args.get('is_issue') }}{% endif %}">
+                              <button class="btn btn-primary"><i class='fa fa-file-o'></i></button>
+                                
+                              </form>
+                             
+                               
 
                               
 
