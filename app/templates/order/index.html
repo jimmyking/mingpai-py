@@ -98,6 +98,16 @@
                               <button type="button" class="btn btn-info task-order">
                                             <i class='fa fa-tasks'></i>
                                 </button>
+
+                              <button type="button" class="btn btn-info complete-order">
+                                            <i class='fa fa-star-half-o'></i>
+                                </button>
+
+                              <button type="button" class="btn btn-info notification-order">
+                                            <i class='fa fa-star'></i>
+                                </button>
+
+
                               <button type="button" class="btn btn-danger mutiple-delete-user"><i class='fa fa-trash-o'></i></button>
                             
                               <form action="{{ url_for('order.export') }}" method="get" style="margin:0px;display: inline">
@@ -107,7 +117,7 @@
                               <input type="hidden" name="status_id" value="{{ request.args.get('status_id') }}">
                               <input type="hidden" name="type_id" value="{{ request.args.get('type_id') }}">
                               <input type="hidden" name="is_issue" value="{% if request.args.get('is_issue') != None %}{{ request.args.get('is_issue') }}{% endif %}">
-                              <button class="btn btn-primary"><i class='fa fa-file-o'></i></button>
+                              <button class="btn btn-primary"><i class='fa fa-save'></i></button>
                                 
                               </form>
                              
@@ -646,6 +656,48 @@
 </div><!-- /.modal -->
 
 
+<div class="modal fade bs-example-modal-sm" id="complete-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">订单完成 </h4>
+            </div>
+            <form action="{{ url_for('order.complete_order')}}" method="post">
+                <div class="modal-body">
+                  是否确认这些订单已完成
+                  <input type="hidden" id="complete-order-ids" name="gids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade bs-example-modal-sm" id="notification-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">订单已通知 </h4>
+            </div>
+            <form action="{{ url_for('order.notification_order')}}" method="post">
+                <div class="modal-body">
+                  是否确认这些订单已通知
+                  <input type="hidden" id="notification-order-ids" name="gids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 
 {% endblock %}
 
@@ -825,6 +877,62 @@
             uids = $(checked_items).map(function(){return $(this).val()}).get().join();
             $('#task-order-ids').val(uids);
             $("#task-order-modal").modal();        
+          }
+       });
+
+       $(".complete-order").on("click",function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         show = true;
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要处理的订单");
+          }else{ 
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] != 5 && status_array[i] != 9){
+                alert("只有团练完成或任务完成的订单才能处理!");
+                return;
+              }
+            }
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#complete-order-ids').val(uids);
+            $("#complete-order-modal").modal();        
+          }
+       });
+
+       $(".notification-order").on("click",function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         show = true;
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要处理的订单");
+          }else{ 
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] != 10){
+                alert("只有已完成的订单才能处理!");
+                return;
+              }
+            }
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#notification-order-ids').val(uids);
+            $("#notification-order-modal").modal();        
           }
        });
 

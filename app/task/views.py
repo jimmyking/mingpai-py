@@ -81,7 +81,7 @@ def update_task():
 	team = OrderGroup.query.filter_by(id=gid).first()
 	task = GroupTask.query.filter_by(id=tid).first()
 	if team.status_id !=8:
-		return redirect(url_for('team.index'))
+		return redirect(url_for('task.index'))
 	
 	OrderGroup.query.filter_by(id=gid).update({OrderGroup.update_man:current_user.id, \
 											   OrderGroup.update_date:datetime.now()},synchronize_session=False)
