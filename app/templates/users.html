@@ -96,6 +96,13 @@
                           <input name="username" class="form-control">
                       </div>
                   </div>
+
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">姓名:</span>
+                          <input name="name" class="form-control">
+                      </div>
+                  </div>
                   
                   <div class="form-group">
                       <div class="input-group">
@@ -152,6 +159,13 @@
                           <input name="username" id="edit-username" class="form-control">
                       </div>
                   </div>
+
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">姓名:</span>
+                          <input name="name" id="edit-name" class="form-control">
+                      </div>
+                  </div>
                   
                   <div class="form-group">
                       <div class="input-group">
@@ -205,6 +219,7 @@
          $.getJSON('_get_user/'+selected_id,function(data){
             $('#edit-id').val(data.id);
             $('#edit-username').val(data.username);
+            $('#edit-name').val(data.name);
             $('#edit-user-modal').modal();
          });
        });

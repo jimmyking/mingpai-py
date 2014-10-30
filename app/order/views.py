@@ -3,7 +3,7 @@ from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request,Response
 from flask.ext.login import login_required,current_user
-from ..models import OrderType,IssueType,Order,Area,OrderProcess,OrderStatus
+from ..models import OrderType,IssueType,Order,Area,OrderProcess,OrderStatus,OrderGroup
 from datetime import datetime
 from .. import db
 from . import order
@@ -40,7 +40,7 @@ def orders():
 	if is_issue and is_issue =='1':
 		order_query = order_query.filter_by(is_issue=1)
 
-	orders = order_query.order_by('id').all()
+	orders = order_query.order_by('id desc').all()
 
 
 	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas,status=status)
@@ -177,10 +177,31 @@ def notification_order():
 	
 	return redirect(url_for('order.orders'))
 
+@order.route('/to_group',methods=['POST'])
+def to_group():
+	oid = request.form['oid'];
+	tid = request.form['tid'];
+
+	
+
+	group = OrderGroup.query.filter_by(id=tid).first()
+
+	Order.query.filter_by(id=oid).update({Order.group_id:tid,Order.status_id:group.status_id, \
+										  Order.update_date:datetime.now(),Order.update_man:current_user.id})
+	db.session.commit()
+	if group.group_type == 0:
+		OrderProcess.save(oid,current_user.id,u"订单加入 %s %s %s组" %(group.name,group.area.name,group.no))
+	else:
+		OrderProcess.save(oid,current_user.id,u"订单加入 %s %s组 %s号机" %(group.name,group.no,group.target))
+	return redirect(url_for('order.orders'))
+
+
 @order.route('/_get_order/<gid>')
 def get_order(gid):
 	order = Order.query.filter_by(id=gid).first()
 	return jsonify(order.to_json())
+
+
 
 
 
@@ -276,8 +297,11 @@ def export():
 
 
 
-
-
+@order.route('/__get_info/<oid>')
+def get_info(oid):
+	order = Order.query.filter_by(id=oid).first()
+	orderprocess = OrderProcess.query.filter_by(order_id=oid).order_by('id').all()
+	return render_template('order/info.html',order=order,orderprocess=orderprocess)
 
 
 

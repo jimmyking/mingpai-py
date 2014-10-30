@@ -122,6 +122,17 @@ def update_task():
 	db.session.commit()
 	return redirect(url_for('team.index'))
 
+@team.route('/out_team',methods=['POST'])
+@login_required
+def out_team():
+	oid = request.form['oid']
+	Order.query.filter_by(id=oid).update({Order.group_id:None,Order.status_id:2,Order.update_man:current_user.id, \
+		                                        Order.update_date:datetime.now()},synchronize_session=False)
+	OrderProcess.save(oid,current_user.id,"订单踢出团队")
+	db.session.commit()
+	return redirect(url_for('team.index'))
+	
+
 
 @team.route('/_get_team_orders/<tid>')
 @login_required
@@ -134,3 +145,12 @@ def get_team_orders(tid):
 def get_team(tid):
 	team = OrderGroup.query.filter_by(id=tid).first()
 	return jsonify(team.to_json())
+
+@team.route('/__get_available_team/<type>')
+@login_required
+def get_available_team(type):
+	status = [3,4]
+	if type == '1':
+		status = [7,8]
+	teams =  OrderGroup.query.filter_by(group_type=type).filter(OrderGroup.status_id.in_(status)).all()
+	return render_template('team/teams.html',teams=teams)

@@ -21,7 +21,7 @@ def users():
 @main.route('/add_user',methods=['POST'])
 @login_required
 def add_user():
-	user = User(username=request.form['username'],password=request.form['password'])
+	user = User(username=request.form['username'],name=request.form['name'],password=request.form['password'])
 	db.session.add(user)
 	db.session.commit()
 	return redirect(url_for('main.users'))
@@ -38,8 +38,8 @@ def delete_user():
 def update_user():
 	uid = request.form['id']
 	username = request.form['username']
-	#password = request.form['password']
-	User.query.filter_by(id=uid).update({User.username:username})
+	name = request.form['name']
+	User.query.filter_by(id=uid).update({User.username:username,User.name:name})
 	db.session.commit()
 	return redirect(url_for('main.users'))
 

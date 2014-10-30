@@ -40,6 +40,7 @@ class User(UserMixin,db.Model):
         return {
             'id': self.id,
             'username': self.username,
+            'name': self.name,
         }
 
 class Game(db.Model):
@@ -301,6 +302,9 @@ class OrderProcess(db.Model):
     oper = db.Column(db.Integer,db.ForeignKey('users.id'))
     oper_time = db.Column(db.DateTime,default=datetime.now)
     remark = db.Column(db.String(128))    
+
+    oper_man = db.relationship("User", backref=db.backref("users", order_by=id))
+
 
     def __repr__(self):
         return '<OrderProcess %r>' % self.id

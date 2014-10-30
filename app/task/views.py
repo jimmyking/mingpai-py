@@ -96,6 +96,16 @@ def update_task():
 	db.session.commit()
 	return redirect(url_for('task.index'))
 
+@task.route('/out_team',methods=['POST'])
+@login_required
+def out_team():
+	oid = request.form['oid']
+	Order.query.filter_by(id=oid).update({Order.group_id:None,Order.status_id:2,Order.update_man:current_user.id, \
+		                                        Order.update_date:datetime.now()},synchronize_session=False)
+	OrderProcess.save(oid,current_user.id,"订单踢出团队")
+	db.session.commit()
+	return redirect(url_for('task.index'))
+
 
 @task.route('/_get_team/<tid>')
 @login_required
