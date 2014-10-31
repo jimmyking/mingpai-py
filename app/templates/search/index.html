@@ -136,6 +136,7 @@
                                   <th>金额</th>
                                   <th>支付</th>
                                   <th>创建</th>
+                                  <th>操作</th>
                                   
 
                                   
@@ -161,7 +162,12 @@
                                   <td>{{ order.amount }}</td>
                                   <td>{{ order.paytype }}</td>
                                   <td>{{ order.create_date }}</td>
-                                  
+                                  <td>
+                                      <button type="button" class="btn btn-default view-order" data-oid="{{ order.id }}">
+                                        <i class='fa fa-wrench'></i>
+                                      </button>
+
+                                  </td>
                                   
                               </tr>
                               {% endfor %}
@@ -182,7 +188,19 @@
 
 {% block otherdiv %}
 
-
+<div class="modal fade bs-example-modal-sm" id="view-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-big-max">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">订单信息 </h4>
+            </div>
+            <div class="modal-body order-info">
+                
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 {% endblock %}
@@ -217,6 +235,14 @@
           },function(start, end, label) {
                   $('#start-date').val(start.format('YYYY-MM-DD'));
                   $('#end-date').val(end.format('YYYY-MM-DD'));
+        });
+
+       $(".view-order").on("click",function(event){
+            var order_id = $(this).attr("data-oid");
+            $.get('/order/__get_info/'+order_id,function(data){
+                $('.order-info').html(data);
+            });
+            $("#view-order-modal").modal();
         });
     
 
