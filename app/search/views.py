@@ -1,12 +1,16 @@
 #encoding=utf-8
 from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
-from flask import request
+from flask import request,Response
 from flask.ext.login import login_required,current_user
 from . import search
 from datetime import date
 from ..models import OrderType,IssueType,Area,OrderStatus,Order
 from .. import db
+import xlwt
+import StringIO
+import mimetypes
+from werkzeug.datastructures import Headers
 
 @search.route('/')
 @login_required
@@ -98,7 +102,7 @@ def export():
 	sheet.write(0,12,u'电话')
 	sheet.write(0,13,u'金额')
 	sheet.write(0,14,u'支付')
-	sheet.write(0,14,u'创建时间')
+	sheet.write(0,15,u'创建时间')
 
 	index = 1;
 	for order in orders:
@@ -117,7 +121,7 @@ def export():
 		sheet.write(index,12,order.mobile)
 		sheet.write(index,13,order.amount)
 		sheet.write(index,14,order.paytype)
-		sheet.write(0,15,order.create_date)
+		sheet.write(index,15,str(order.create_date))
 		index = index+1;
 
 
