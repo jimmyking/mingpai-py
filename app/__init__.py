@@ -39,5 +39,8 @@ def create_app(config_name):
     from .task import task as task_blueprint
     app.register_blueprint(task_blueprint, url_prefix='/task')
 
+    from .search import search as search_blueprint
+    app.register_blueprint(search_blueprint, url_prefix='/search')
+
     return app
 
