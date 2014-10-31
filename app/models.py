@@ -8,7 +8,7 @@ class Role(db.Model):
     __tablename__ = 'roles'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
-    users = db.relationship('User', backref='role', lazy='dynamic')
+    #users = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
         return '<Role %r>' % self.name
@@ -21,6 +21,8 @@ class User(UserMixin,db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     name = db.Column(db.String(64))
+
+    role = db.relationship("Role", backref=db.backref("user", order_by=id))
 
     @property
     def password(self):
@@ -41,6 +43,7 @@ class User(UserMixin,db.Model):
             'id': self.id,
             'username': self.username,
             'name': self.name,
+            'role_id': self.role_id
         }
 
 class Game(db.Model):

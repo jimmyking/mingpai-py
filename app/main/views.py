@@ -1,9 +1,9 @@
 from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request
-from flask.ext.login import login_required
+from flask.ext.login import login_required,current_user
 from . import main
-from ..models import User
+from ..models import User,Role
 from .. import db
 
 
@@ -16,12 +16,13 @@ def index():
 @login_required
 def users():
 	users = User.query.order_by('id').all()
-	return render_template('users.html',users=users)
+	roles = Role.query.order_by('id').all()
+	return render_template('users.html',users=users,roles=roles)
 
 @main.route('/add_user',methods=['POST'])
 @login_required
 def add_user():
-	user = User(username=request.form['username'],name=request.form['name'],password=request.form['password'])
+	user = User(username=request.form['username'],name=request.form['name'],password=request.form['password'],role_id=request.form['role_id'])
 	db.session.add(user)
 	db.session.commit()
 	return redirect(url_for('main.users'))
@@ -39,7 +40,8 @@ def update_user():
 	uid = request.form['id']
 	username = request.form['username']
 	name = request.form['name']
-	User.query.filter_by(id=uid).update({User.username:username,User.name:name})
+	role_id = request.form['role_id']
+	User.query.filter_by(id=uid).update({User.username:username,User.name:name,User.role_id:role_id})
 	db.session.commit()
 	return redirect(url_for('main.users'))
 
@@ -47,4 +49,6 @@ def update_user():
 def get_user(uid):
 	user = User.query.filter_by(id=uid).first()
 	return jsonify(user.to_json())
+
+
 

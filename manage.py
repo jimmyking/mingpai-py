@@ -4,6 +4,7 @@ from app import create_app, db
 from app.models import User, Role, Order, OrderStatus, OrderGroup
 from flask.ext.script import Manager, Shell
 from flask.ext.migrate import Migrate, MigrateCommand
+from flask.ext.login import current_user
 
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'default')
@@ -12,9 +13,9 @@ migrate = Migrate(app, db)
 
 
 
-@app.before_request
-def before_request():
-	print "hello mingpai"
+@app.context_processor
+def inject_user():
+    return dict(user=current_user)
 
 
 def make_shell_context():

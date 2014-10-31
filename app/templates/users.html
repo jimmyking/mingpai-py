@@ -54,7 +54,7 @@
                                   <td>{{ user.username }}</td>
                                   <td>{{ user.name }}</td>
                                   <td>
-                                      2014-09-09 12:12
+                                      {{ user.role.name }}
                                   </td>
                                   <td>
                                     
@@ -101,6 +101,17 @@
                       <div class="input-group">
                           <span class="input-group-addon">姓名:</span>
                           <input name="name" class="form-control">
+                      </div>
+                  </div>
+
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">角色:</span>
+                          <select class="form-control" name="role_id">
+                            {% for role in roles %}
+                              <option value="{{role.id}}">{{ role.name }}</option>
+                            {% endfor %}
+                          </select>
                       </div>
                   </div>
                   
@@ -166,6 +177,17 @@
                           <input name="name" id="edit-name" class="form-control">
                       </div>
                   </div>
+
+                  <div class="form-group">
+                      <div class="input-group">
+                          <span class="input-group-addon">角色:</span>
+                          <select class="form-control" name="role_id" id="edit-role">
+                            {% for role in roles %}
+                              <option value="{{role.id}}">{{ role.name }}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
+                  </div>
                   
                   <div class="form-group">
                       <div class="input-group">
@@ -220,6 +242,7 @@
             $('#edit-id').val(data.id);
             $('#edit-username').val(data.username);
             $('#edit-name').val(data.name);
+            $('#edit-role').val(data.role_id);
             $('#edit-user-modal').modal();
          });
        });
