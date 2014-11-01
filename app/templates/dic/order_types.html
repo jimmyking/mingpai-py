@@ -50,7 +50,7 @@
                               </tr>
 
                               {% for ordertype in ordertypes %}
-                              <tr>
+                              <tr style="background-color: {% if ordertype.color %}{{ ordertype.color }}{% else %} #0000  {% endif %}">
                                   <td>
                                     <input type="checkbox" value="{{ ordertype.id }}" class="minimal-red check-item"/>
                                    

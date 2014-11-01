@@ -1,0 +1,19 @@
+<div class="box-header">
+  <h3 class="box-title">订单日志</h3>
+</div>
+<div class="box-body">
+  <table class="table table-bordered">
+    <tr>
+      <th>操作人</th>
+      <th>时间</th>
+      <th>备注</th>
+    </tr>
+    {% for p in orderprocess %}
+    <tr>
+      <td>{{ p.oper_man.username }}</td>
+      <td>{{ p.oper_time }}</td>
+      <td>{{ p.remark }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>

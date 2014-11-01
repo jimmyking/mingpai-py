@@ -73,7 +73,7 @@ def add_order():
 	db.session.commit()
 
 	OrderProcess.save(order.id,current_user.id,"新增订单")
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/update_order',methods=['POST'])
 @login_required
@@ -99,7 +99,7 @@ def update_order():
 										  Order.memo:memo,Order.update_man:current_user.id,Order.update_date:datetime.now()})
 	db.session.commit()
 	OrderProcess.save(gid,current_user.id,"修改订单")
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/del_order',methods=['POST'])
 @login_required
@@ -108,7 +108,7 @@ def del_order():
 	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.is_delete:1},synchronize_session=False)
 	db.session.commit()
 	
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 
 @order.route('/check_order',methods=['POST'])
@@ -118,7 +118,7 @@ def check_order():
 	Order.query.filter_by(id=oid).update({Order.status_id:2,Order.update_date:datetime.now(),Order.update_man:current_user.id})
 	db.session.commit()
 	OrderProcess.save(oid,current_user.id,"审核订单")
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/bug_order',methods=['POST'])
 @login_required
@@ -131,7 +131,7 @@ def bug_order():
 	db.session.commit()
 
 	OrderProcess.save(oid,current_user.id,u"标记为异常订单 异常信息为: %s" %issue_memo)
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/unbug_order',methods=['POST'])
 @login_required
@@ -141,7 +141,7 @@ def unbug_order():
 										  Order.update_date:datetime.now(),Order.update_man:current_user.id})
 	db.session.commit()
 	OrderProcess.save(oid,current_user.id,"解除异常")
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/wait_task',methods=['POST'])
 @login_required
@@ -152,7 +152,7 @@ def wait_task():
 		OrderProcess.save(oid,current_user.id,"修改状态至转任务组")
 	db.session.commit()
 	
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 
 @order.route('/complete_order',methods=['POST'])
@@ -164,7 +164,7 @@ def complete_order():
 		OrderProcess.save(oid,current_user.id,"修改状态至已完成")
 	db.session.commit()
 	
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/notification_order',methods=['POST'])
 @login_required
@@ -175,7 +175,7 @@ def notification_order():
 		OrderProcess.save(oid,current_user.id,"修改状态至已通知")
 	db.session.commit()
 	
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 @order.route('/to_group',methods=['POST'])
 def to_group():
@@ -193,7 +193,7 @@ def to_group():
 		OrderProcess.save(oid,current_user.id,u"订单加入 %s %s %s组" %(group.name,group.area.name,group.no))
 	else:
 		OrderProcess.save(oid,current_user.id,u"订单加入 %s %s组 %s号机" %(group.name,group.no,group.target))
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 
 @order.route('/_get_order/<gid>')
@@ -303,7 +303,10 @@ def get_info(oid):
 	orderprocess = OrderProcess.query.filter_by(order_id=oid).order_by('id').all()
 	return render_template('order/info.html',order=order,orderprocess=orderprocess)
 
-
+@order.route('/__get_log/<oid>')
+def get_log(oid):
+	orderprocess = OrderProcess.query.filter_by(order_id=oid).order_by('id').all()
+	return render_template('order/logs.html',orderprocess=orderprocess)
 
 #订单回收站
 @order.route('/trash')

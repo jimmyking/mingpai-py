@@ -36,6 +36,7 @@
                                 <th>目标</th>
                                 <th>进度</th>
                                 <th>状态</th>
+                                <th>数量</th>
                                 <th>创建时间</th>
                                 <th style="width: 200px">操作</th>
                             </tr>
@@ -50,7 +51,8 @@
                                 <td>{{ team.target}}</td>
                                 <td>{{ team.now_level}}</td>
                                 <td>{{ team.status.name }}</td>
-                                <td>{{ team.create_date }}</td>                               
+                                <td>{{ team.orders.count() }}</td>
+                                <td>{{ team.create_date }}</td>                              
                                 <td>       
                                     <button type="button" class="btn btn-default view-team">
                                         <i class='fa fa-eye'></i>
@@ -91,7 +93,7 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title tam-orders-title">订单列表 </h4>
                 <div class="row" style="margin-top:10px;">
-                    <div class="col-md-5 pull-right">
+                    <div class="col-md-4">
                         <form action="/team/update_level" method="post">
                             <div class="form-inline">
                                 <div class="input-group">
@@ -104,6 +106,12 @@
                                 </div>
                             </div>
                         </form>
+                    </div>
+                    <div class="col-md-1 pull-right">
+                    <form action="{{ url_for('team.export') }}" method="get" style="margin:0px;display: inline">
+                        <input name="tid" id="team-export-id" type="hidden" class="form-control">
+                        <button class="btn btn-primary"><i class='fa fa-save'></i></button>
+                    </form>
                     </div>
                 </div>
 
@@ -249,6 +257,7 @@
                 $('.tam-orders-title').html(data.name+data.area_name+data.no+"组    目标:"+data.target+"级");
                 $('#team-level').val(data.now_level);
                 $('#team-level-id').val(data.id);
+                $('#team-export-id').val(data.id);
                 $('.task-group-id').val(data.id);
                 $.get('/team/_get_team_orders/'+selected_id,function(data){
                     $('#team-orders-modal').find('.modal-body').html(data);

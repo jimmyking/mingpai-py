@@ -37,7 +37,7 @@ def add_team():
 	for oid in oids.split(','):
 		OrderProcess.save(oid,current_user.id,(u"分配到: %s  %s组%s号机" %(name,no,target)))
 
-	return redirect(url_for('order.orders'))
+	return redirect(request.referrer)
 
 
 @task.route('/start_task',methods=['POST'])

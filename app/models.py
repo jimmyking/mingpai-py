@@ -145,7 +145,9 @@ class OrderGroup(db.Model):
 
     status = db.relationship("OrderStatus", backref=db.backref("group_status", order_by=id))
     area = db.relationship("Area", backref=db.backref("group_areas", order_by=id))
-    tasks = db.relationship('OrderGroupTask', backref='order_group',lazy='dynamic')
+    tasks = db.relationship('OrderGroupTask', backref='group_tasks',lazy='dynamic')
+
+    orders = db.relationship('Order', backref=db.backref('order_groups'),lazy='dynamic')
 
     def __repr__(self):
         return '<OrderGrouop %r>' % self.name
@@ -248,6 +250,7 @@ class Order(db.Model):
     order_type = db.relationship("OrderType", backref=db.backref("orders", order_by=id))
     order_status = db.relationship("OrderStatus", backref=db.backref("order_status", order_by=id))
     area = db.relationship("Area", backref=db.backref("areas", order_by=id))
+
 
     
 

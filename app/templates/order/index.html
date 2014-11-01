@@ -85,7 +85,10 @@
                     <div class="box-body">
                         
                         <div class="box-header">
-                            <h3 class="box-title">订单处理列表</h3>
+                            <h3 class="box-title">订单处理列表
+                            <small>订单数量: {{orders | length }}笔</small>
+                            </h3>
+
                             <span class="pull-right">
                               <button type="button" class="btn btn-success" data-toggle="modal" data-target="#add-user-modal"><i class='fa fa-plus'></i></button>
 
@@ -170,8 +173,14 @@
                                   <td>{{ order.start_level }}</td>
                                   <td>{{ order.end_level }}</td>
                                   <td>{{ order.now_level }}</td>
-                                  <td>{{ order.wangwang }}</td>
-                                  <td>{{ order.qq }}</td>
+                                  <td>
+                                    {{ order.wangwang }}
+                                    <a href="http://amos.im.alisoft.com/msg.aw?v=2&uid={{ order.wangwang }}&site=cntaobao&s=1&charset=utf-8" target="_blank">旺旺</a>
+                                    </td>
+                                  <td>
+                                    {{ order.qq }}
+                                    <a href="http://wpa.qq.com/msgrd?v=3&uin={{order.qq}}&site=qq&menu=yes" target="_blank">QQ</a>
+                                  </td>
                                   <td>{{ order.mobile }}</td>
                                   <td>{{ order.amount }}</td>
                                   <td>{{ order.paytype }}</td>
@@ -287,13 +296,13 @@
 
                          <div class="input-group">
                           <span class="input-group-addon">当前等级:</span>
-                          <input name="start_level" class="form-control long-input" value="0">
+                          <input name="start_level" class="form-control long-input">
                         </div>
                         <div class="input-group" style="width:200px;">
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">需求等级:</span>
-                          <input name="end_level" class="form-control" value="0">
+                          <input name="end_level" class="form-control">
                         </div>
                         
                       </div>
@@ -570,6 +579,8 @@
                   <button type="submit" class="btn btn-primary">提交</button>
                 </div>
             </form>
+            <div class="box box-primary" id="order-logs">
+            </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -763,7 +774,11 @@
             $('#edit-amount').val(data.amount);
             $('#edit-paytype').val(data.paytype);
             $('#edit-memo').val(data.memo);
-            $('#edit-user-modal').modal();
+            $.get('/order/__get_log/'+selected_id,function(data){
+              $('#order-logs').html(data);
+              $('#edit-user-modal').modal();
+            });
+            
          });
        });
 
