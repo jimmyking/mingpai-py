@@ -98,7 +98,9 @@
                                             <i class='fa fa-share'></i>
                                 </button>
 
-                              
+                              <button type="button" class="btn btn-info task-order">
+                                            <i class='fa fa-tasks'></i>
+                                </button>
 
                               <button type="button" class="btn btn-info complete-order">
                                             <i class='fa fa-star-half-o'></i>
@@ -211,7 +213,11 @@
                                           </button>
                                         {% endif %}
 
-                                       
+                                        {% if order.status_id == 2 or order.status_id == 6 %}
+                                          <button type="button" class="btn btn-default one-order-to-task">
+                                            <i class='fa fa-tasks'></i>
+                                          </button>
+                                        {% endif %}   
                                   </td>
                               </tr>
                               {% endfor %}
@@ -634,7 +640,36 @@
 </div><!-- /.modal -->
 
 
-
+<div class="modal fade bs-example-modal-sm" id="task-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">分配任务订单 </h4>
+            </div>
+            <form action="{{ url_for('task.add_team')}}" method="post">
+                <input type="hidden" name="oids" id="task-order-ids">
+                <div class="modal-body">
+                  <div class="input-group" style="z-index:999999;">
+                      <span class="input-group-addon">日期:</span>
+                      <input name="name" class="form-control datepicker" data-date="2014-11-01" data-date-format="yyyy-mm-dd" id="group-name" readonly="true">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
+                      <span class="input-group-addon">组号:</span>
+                      <input name="no" class="form-control" value="1">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
+                      <span class="input-group-addon">机器号:</span>
+                      <input name="target" class="form-control" value="1">
+                  </div>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 
 <div class="modal fade bs-example-modal-sm" id="complete-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
@@ -857,7 +892,33 @@
           }
        });
 
-        
+        $(".task-order").on("click",function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         show = true;
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要分配的订单");
+          }else{ 
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] != 6){
+                alert("只有转任务组的订单才能分配!");
+                return;
+              }
+            }
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#task-order-ids').val(uids);
+            $("#task-order-modal").modal();        
+          }
+       });
 
        $(".complete-order").on("click",function(){
          var item_size = $(".check-item").size();
@@ -925,7 +986,15 @@
            
        });
 
-       
+       $('.one-order-to-task').on('click',function(){
+           selected_id = $(this).parent().siblings().find(':checkbox').val();
+           $('#order-to-team-oid').val(selected_id);
+           $.get('/team/__get_available_team/1',function(data){
+             $('#order-to-team-modal').find('.modal-body').append(data);
+             $('#order-to-team-modal').modal();
+           });
+           
+       });
 
        //
 

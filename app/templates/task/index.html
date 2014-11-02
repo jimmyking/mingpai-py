@@ -19,7 +19,116 @@
     <section class="content">
         <div class="row">
             <div class="col-md-12">
-                <div class="box">
+
+                <div class="box box_success">
+                    <div class="box-header">
+                    <h3 class="box-title">dingdanliebiao</h3>
+                    </div>
+                    <div class="box-body">
+                        
+                        <table class="table table-bordered table-hover">
+                              <tr>
+                                  <th style="width: 10px">
+                                    <input type="checkbox" class="icheckbox_square-blue check-all"/>
+                                  </th>
+                                  <th>单号</th>
+                                  <th>类型</th>
+                                  <th>状态</th>
+                                  <th>区服</th>
+                                  <th>角色</th>
+                                  <th>账号</th>
+                                  <th>密码</th>
+                                  <th>起点</th>
+                                  <th>需求</th>
+                                  <th>当前</th>
+                                  <th>旺旺</th>
+                                  <th>QQ号</th>
+                                  <th>电话</th>
+                                  <th>金额</th>
+                                  <th>支付</th>
+                                  
+
+                                  <th style="width: 200px">操作</th>
+                              </tr>
+
+                              {% for order in orders %}
+                              <tr style="background-color: {% if order.is_issue %} #ff0000  {% else %} {{ order.order_type.color }}  {% endif %}">
+                                  <td>
+                                    <input type="checkbox" value="{{ order.id }}" class="minimal-red check-item"/>
+                                    
+                                  </td>
+                                 
+                                  <td>{{ order.order_no}}</td>
+                                  <td>{{ order.order_type.name}}</td>
+                                  <td>{{ order.order_status.name}}</td>
+                                  <td>{{ order.area.name}}</td>
+                                  <td>{{ order.acter_name }}</td>
+                                  <td>{{ order.acter_account }}</td>
+                                  <td>{{ order.acter_password }}</td>
+                                  <td>{{ order.start_level }}</td>
+                                  <td>{{ order.end_level }}</td>
+                                  <td>{{ order.now_level }}</td>
+                                  <td>
+                                    {{ order.wangwang }}
+                                    <a href="http://amos.im.alisoft.com/msg.aw?v=2&uid={{ order.wangwang }}&site=cntaobao&s=1&charset=utf-8" target="_blank">旺旺</a>
+                                    </td>
+                                  <td>
+                                    {{ order.qq }}
+                                    <a href="http://wpa.qq.com/msgrd?v=3&uin={{order.qq}}&site=qq&menu=yes" target="_blank">QQ</a>
+                                  </td>
+                                  <td>{{ order.mobile }}</td>
+                                  <td>{{ order.amount }}</td>
+                                  <td>{{ order.paytype }}</td>
+                                  
+                                  <td>  
+                                        <input type="hidden" class="area_id" value="{{ order.area.id }}">
+                                        <input type="hidden" class="status_id" value="{{ order.order_status.id }}">    
+                                        <button type="button" class="btn btn-default edit-user">
+                                            <i class='fa fa-wrench'></i>
+                                        </button>
+                                        {% if order.status_id == 1%}
+                                        <button type="button" class="btn btn-default check-order">
+                                            <i class='fa fa-check'></i>
+                                        </button>
+                                        {% endif %}
+
+                                        {% if order.is_issue %}
+                                          <button type="button" class="btn btn-default unbug-order">
+                                            <i class='fa fa-smile-o'></i>
+                                          </button>
+                                        {% else %}
+                                          <button type="button" class="btn btn-default bug-order">
+                                            <i class='fa fa-bug'></i>
+                                          </button>
+                                        {% endif %}
+
+                                        {% if order.status_id == 2%}
+                                        <button type="button" class="btn btn-default one-order-to-team">
+                                            <i class='fa fa-truck'></i>
+                                          </button>
+                                        {% endif %}
+
+                                        {% if order.status_id == 2 or order.status_id == 6 %}
+                                          <button type="button" class="btn btn-default one-order-to-task">
+                                            <i class='fa fa-tasks'></i>
+                                          </button>
+                                        {% endif %}   
+                                  </td>
+                              </tr>
+                              {% endfor %}
+                              
+                              
+                          </table>
+
+
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="box box-primary">
 
                     <div class="box-body">
 
@@ -80,6 +189,7 @@
                 </div>
             </div>
         </div>
+
     </section><!-- /.content -->
 </aside><!-- /.right-side -->
 

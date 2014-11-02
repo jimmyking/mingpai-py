@@ -164,13 +164,35 @@ class OrderGroup(db.Model):
             'now_level': self.now_level,
         }
 
-    def to_task_json(self):
+
+
+class OrderTeam(db.Model):
+    __tablename__ = 'order_teams'
+    id = db.Column(db.Integer, primary_key=True)
+    group_type = db.Column(db.Integer)
+    name = db.Column(db.String(64))
+    section = db.Column(db.Integer)
+    no = db.Column(db.Integer)
+    status_id = db.Column(db.Integer,db.ForeignKey('order_status.id'))
+    create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    create_date = db.Column(db.DateTime,default=datetime.now,index=True)
+    update_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    update_date = db.Column(db.DateTime,default=datetime.now)
+
+    status = db.relationship("OrderStatus", backref=db.backref("team_status", order_by=id))
+
+    orders = db.relationship('Order', backref=db.backref('order_teams'),lazy='dynamic')
+
+    def __repr__(self):
+        return '<OrderTeam %r>' % self.name
+
+    def to_task(self):
         return {
             'id': self.id,
             'type': self.group_type,
             'name': self.name,
             'no': self.no,
-            'target': self.target,
+            'section': self.section,
         }
 
 class OrderGroupTask(db.Model):
@@ -246,6 +268,7 @@ class Order(db.Model):
     update_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     update_date = db.Column(db.DateTime,default=datetime.now)
     group_id = db.Column(db.Integer,db.ForeignKey('order_groups.id'))
+    team_id = db.Column(db.Integer,db.ForeignKey('order_teams.id'))
 
     order_type = db.relationship("OrderType", backref=db.backref("orders", order_by=id))
     order_status = db.relationship("OrderStatus", backref=db.backref("order_status", order_by=id))

@@ -1,13 +1,17 @@
 #coding=utf-8
 from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
-from flask import request
+from flask import request,Response
 from flask.ext.login import login_required,current_user
 from ..models import Order,Area,OrderProcess,OrderStatus,OrderGroup,OrderGroupProcess
 from ..models import GroupTask,OrderTask,OrderGroupTask
 from datetime import datetime
 from .. import db
 from . import team
+import xlwt
+import StringIO
+import mimetypes
+from werkzeug.datastructures import Headers
 
 @team.route('/')
 @login_required
@@ -159,9 +163,7 @@ def get_available_team(type):
 @team.route('/export')
 def export():
 	tid = request.args.get('tid')
-	team =  OrderGroup.query.filter_by(id=type).first()
-
-	orders = team.orders
+	orders = Order.query.filter_by(group_id=tid).all()
 	response=Response()
 	response.status_code=200
 	workbook=xlwt.Workbook()
