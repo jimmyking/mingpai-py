@@ -17,6 +17,7 @@
         <ol class="breadcrumb">
             <li><a href="{{ url_for('main.index') }}"><i class="fa fa-dashboard"></i> Home</a></li>
             <li class="active"><a href="{{ url_for('order.orders') }}">订单处理</a></li>
+
         </ol>
     </section>
 
@@ -134,7 +135,7 @@
                                   <th style="width: 10px">
                                     <input type="checkbox" class="icheckbox_square-blue check-all"/>
                                   </th>
-                                  <th>单号</th>
+                                  
                                   <th>类型</th>
                                   <th>状态</th>
                                   <th>区服</th>
@@ -149,6 +150,8 @@
                                   <th>电话</th>
                                   <th>金额</th>
                                   <th>支付</th>
+                                  <th>淘宝</th>
+                                  <th>备注</th>
                                   
 
                                   <th style="width: 200px">操作</th>
@@ -161,7 +164,7 @@
                                     
                                   </td>
                                  
-                                  <td>{{ order.order_no}}</td>
+                                  
                                   <td>{{ order.order_type.name}}</td>
                                   <td>{{ order.order_status.name}}</td>
                                   <td>{{ order.area.name}}</td>
@@ -182,7 +185,12 @@
                                   <td>{{ order.mobile }}</td>
                                   <td>{{ order.amount }}</td>
                                   <td>{{ order.paytype }}</td>
-                                  
+                                  <td>{{ order.taobao_date}}</td>
+                                  <td style="background-color: {% if order.warning %} {{ order.warning.color }}  {% else %}  {% endif %}">
+                                  {% if order.warning %}
+                                    {{ order.warning.name }}
+                                  {% endif %}
+                                  </td>
                                   <td>  
                                         <input type="hidden" class="area_id" value="{{ order.area.id }}">
                                         <input type="hidden" class="status_id" value="{{ order.order_status.id }}">    
@@ -210,6 +218,9 @@
                                             <i class='fa fa-truck'></i>
                                           </button>
                                         {% endif %}
+                                        <button type="button" class="btn btn-default warning-order">
+                                            <i class='fa fa-bookmark'></i>
+                                          </button>
 
                                        
                                   </td>
@@ -253,8 +264,11 @@
                           </select>
                           <!-- <input name="type_id" class="form-control long-input"> -->
                         </div>
-                        <div class="input-group" style="width:225px;">
+                        <div class="input-group">
+                          <span class="input-group-addon">淘宝时间:</span>
+                          <input name="taobao_date" class="form-control datetimepicker" placeholder="yyyy-mm-dd hh24:mi">
                         </div>
+                        
                         <div class="input-group">
                           <span class="input-group-addon">所在区:</span>
                           <select name="area_id" class="form-control long-input">
@@ -325,7 +339,7 @@
                           <span class="input-group-addon">支付金额:</span>
                           <input name="amount" class="form-control long-input">
                         </div>
-                        <div class="input-group" style="width:200px;">
+                        <div class="input-group" style="width:225px;">
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">支付方式:</span>
@@ -335,10 +349,17 @@
                       </div>
 
                       <div class="inline-form-magin">
-
+                        <div class="input-group">
+                          <span class="input-group-addon">备注类型:</span>
+                          <select name="warning_type" class="form-control">
+                            {% for wy in warninges %}
+                              <option value="{{ wy.id }}">{{ wy.name }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
                          <div class="input-group">
                           <span class="input-group-addon">备注:</span>
-                          <input name="memo" class="form-control long-input">
+                          <input name="memo" class="form-control">
                         </div>
                       </div>
                       
@@ -698,6 +719,37 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+<div class="modal fade bs-example-modal-sm" id="warning-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">添加备注 </h4>
+            </div>
+            <form action="{{ url_for('order.add_warning') }}" method="post">
+                <div class="modal-body">
+                  <div class="input-group">
+                  <span class="input-group-addon">备注类型:</span>
+                  <select name="warning_type" class="form-control">
+                            {% for wy in warninges %}
+                              <option value="{{ wy.id }}">{{ wy.name }}</option>
+                            {% endfor %}
+                          </select>
+                  </div>
+                  <input type="hidden" id="warning-order-oid" name="oid"/>
+                  <div class="input-group">
+                      <span class="input-group-addon">内容:</span>
+                      <input name="content" class="form-control">
+                  </div>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 
 
 {% endblock %}
@@ -720,6 +772,15 @@
        });
 
        $('.datepicker').datepicker({language:'zh-CN'});
+
+       $('.datetimepicker').daterangepicker({
+        format:'YYYY-MM-DD hh:mm',
+        timePicker:true,
+        singleDatePicker:true,
+        timePicker12Hour:false
+       });
+
+       
        
        
        $(".edit-user").on("click",function(){
@@ -925,7 +986,12 @@
            
        });
 
-       
+       $('.warning-order').on('click',function(){
+           selected_id = $(this).parent().siblings().find(':checkbox').val();
+           $('#warning-order-oid').val(selected_id);
+        
+           $('#warning-order-modal').modal();
+       });
 
        //
 

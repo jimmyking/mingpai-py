@@ -279,11 +279,13 @@ class Order(db.Model):
     update_date = db.Column(db.DateTime,default=datetime.now)
     group_id = db.Column(db.Integer,db.ForeignKey('order_groups.id'))
     team_id = db.Column(db.Integer,db.ForeignKey('order_teams.id'))
+    warning_type = db.Column(db.Integer,db.ForeignKey('warning_type.id'))
+    taobao_date = db.Column(db.DateTime,index=True)
 
     order_type = db.relationship("OrderType", backref=db.backref("orders", order_by=id))
     order_status = db.relationship("OrderStatus", backref=db.backref("order_status", order_by=id))
     area = db.relationship("Area", backref=db.backref("areas", order_by=id))
-
+    warning = db.relationship("WarningType",backref=db.backref("warning_type",order_by=id))
 
     tasks = db.relationship("OrderTask",backref=db.backref("order_task", order_by=id))
 
@@ -389,6 +391,45 @@ class GroupTask(db.Model):
             'type': self.type,
             'name': self.name,
         }
+
+class WarningType(db.Model):
+    __tablename__ = "warning_type"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    color = db.Column(db.String(64))
+
+    def __repr__(self):
+        return '<WarningType %r>' % self.id
+
+    def to_json(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'color': self.color, 
+        }
+        
+
+class OrderWarning(db.Model):
+    __tablename__ = "order_warning"
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.Integer,db.ForeignKey('warning_type.id'))
+    order_id = db.Column(db.Integer,db.ForeignKey('orders.id'))
+    cntent = db.Column(db.String(128))
+    create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
+    create_date = db.Column(db.DateTime,default=datetime.now,index=True)
+
+    oper_man = db.relationship("User", backref=db.backref("warning_users", order_by=id))
+    warning = db.relationship("WarningType", backref=db.backref("warning", order_by=id))
+
+    def __repr__(self):
+        return '<OrderWarning %r>' % self.id
+
+    @classmethod
+    def save(cls,oid,type,memo,oper):
+        process = OrderWarning(order_id=oid,type=type,create_man=oper,cntent=memo)
+        db.session.add(process)
+        db.session.commit()
+        
 
 @login_manager.user_loader
 def user_loader(user_id):

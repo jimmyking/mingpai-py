@@ -1,10 +1,5 @@
 {% extends "layout.html" %}
 
-{% block head_css %}
-{{ super() }}
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/datepicker/datepicker3.css')}}">
-{% endblock %}
-
 {% block page_content %}
 
 <!-- Right side column. Contains the navbar and content of the page -->
@@ -207,8 +202,7 @@
 
 {% block foot_js %}
     {{ super() }}
-<script type="text/javascript" src="{{ url_for('static',filename='js/datepicker/bootstrap-datepicker.js')}}"></script>
-<script type="text/javascript" src="{{ url_for('static',filename='js/datepicker/locales/bootstrap-datepicker.zh-CN.js')}}"></script>
+
 <script type="text/javascript">
      $(function() {
        

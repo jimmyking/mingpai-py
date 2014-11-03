@@ -3,7 +3,7 @@ from flask import render_template, session, redirect, url_for, current_app
 from flask import jsonify
 from flask import request,Response
 from flask.ext.login import login_required,current_user
-from ..models import OrderType,IssueType,Order,Area,OrderProcess,OrderStatus,OrderGroup
+from ..models import OrderType,IssueType,Order,Area,OrderProcess,OrderStatus,OrderGroup,WarningType,OrderWarning
 from datetime import datetime
 from .. import db
 from . import order
@@ -18,6 +18,7 @@ from werkzeug.datastructures import Headers
 def orders():
 	ordertypes = OrderType.query.order_by('id').all()
 	issuetypes = IssueType.query.order_by('id').all()
+	warninges = WarningType.query.order_by('id').all()
 	areas = Area.query.order_by('id').all()
 	status = OrderStatus.query.order_by('id').all()
 	order_query = Order.query.filter_by(is_delete=0)
@@ -43,7 +44,7 @@ def orders():
 	orders = order_query.order_by('id desc').all()
 
 
-	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas,status=status)
+	return render_template('order/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas,status=status,warninges=warninges)
 
 @order.route('/add_order',methods=['POST'])
 @login_required
@@ -61,17 +62,18 @@ def add_order():
 	amount = request.form['amount']
 	paytype = request.form['paytype']
 	memo = request.form['memo']
+	warning_type = request.form['warning_type']
 	order = Order(type_id=int(type_id),area_id=int(area_id),acter_name=acter_name, \
 		            acter_account=acter_account,acter_password=acter_password, \
 		            start_level=start_level,end_level=end_level,now_level=start_level, \
 		            wangwang=wangwang,qq=qq,mobile=mobile,amount=amount, \
-		            paytype=paytype,memo=memo)
+		            paytype=paytype,memo=memo,warning_type=warning_type)
 	order.status_id=1
 	order.create_man = current_user.id
 	order.init_order_no()
 	db.session.add(order)
 	db.session.commit()
-
+	OrderWarning.save(order.id,warning_type,memo,current_user.id)
 	OrderProcess.save(order.id,current_user.id,"新增订单")
 	return redirect(request.referrer)
 
@@ -151,6 +153,19 @@ def wait_task():
 	for oid in gids.split(','):
 		OrderProcess.save(oid,current_user.id,"修改状态至转任务组")
 	db.session.commit()
+	
+	return redirect(request.referrer)
+
+@order.route('/add_warning',methods=['POST'])
+@login_required
+def add_warning():
+	oid = request.form['oid']
+	warning_type = request.form['warning_type']
+	content = request.form['content']
+
+	Order.query.filter_by(id=oid).update({Order.warning_type:warning_type,Order.update_date:datetime.now(),Order.update_man:current_user.id},synchronize_session=False)
+	db.session.commit()
+	OrderWarning.save(oid,warning_type,content,current_user.id)
 	
 	return redirect(request.referrer)
 
@@ -301,12 +316,15 @@ def export():
 def get_info(oid):
 	order = Order.query.filter_by(id=oid).first()
 	orderprocess = OrderProcess.query.filter_by(order_id=oid).order_by('id').all()
-	return render_template('order/info.html',order=order,orderprocess=orderprocess)
+	warninges = OrderWarning.query.filter_by(order_id=oid).order_by('id').all()
+	return render_template('order/info.html',order=order,orderprocess=orderprocess,warninges=warninges)
 
 @order.route('/__get_log/<oid>')
 def get_log(oid):
 	orderprocess = OrderProcess.query.filter_by(order_id=oid).order_by('id').all()
-	return render_template('order/logs.html',orderprocess=orderprocess)
+	warninges = OrderWarning.query.filter_by(order_id=oid).order_by('id').all()
+
+	return render_template('order/logs.html',orderprocess=orderprocess,warninges=warninges)
 
 #订单回收站
 @order.route('/trash')

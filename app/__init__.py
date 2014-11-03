@@ -42,5 +42,8 @@ def create_app(config_name):
     from .search import search as search_blueprint
     app.register_blueprint(search_blueprint, url_prefix='/search')
 
+    from .warning import warning as warning_blueprint
+    app.register_blueprint(warning_blueprint, url_prefix='/warning')
+
     return app
 
