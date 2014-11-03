@@ -1,5 +1,10 @@
 {% extends "layout.html" %}
 
+{% block head_css %}
+{{ super() }}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/datepicker/datepicker3.css')}}">
+{% endblock %}
+
 {% block page_content %}
 
 <!-- Right side column. Contains the navbar and content of the page -->
@@ -21,10 +26,18 @@
             <div class="col-md-12">
 
                 <div class="box box_success">
-                    <div class="box-header">
-                    <h3 class="box-title">dingdanliebiao</h3>
-                    </div>
+
                     <div class="box-body">
+                    <div class="box-header">
+                      <h3 class="box-title">待处理订单列表
+                        <small>订单数量: {{orders | length }}笔</small>
+                      </h3>
+                      <span class="pull-right">
+                        <button type="button" class="btn btn-info task-order">
+                                            <i class='fa fa-tasks'></i>
+                                </button>
+                      </span>
+                    </div>
                         
                         <table class="table table-bordered table-hover">
                               <tr>
@@ -142,6 +155,7 @@
                                 <th>日期</th>
                                 <th>组别</th>
                                 <th>编号</th>
+                                <th>数量</th>
                                 <th>进度</th>
                                 <th>状态</th>
                                 <th>创建时间</th>
@@ -154,18 +168,16 @@
                                     <input type="hidden" class="team-id" value="{{ team.id }}">
                                 </td>
                                 
+                                <td>{{ team.section}}</td>
                                 <td>{{ team.no}}</td>
-                                <td>{{ team.target}}</td>
-                                
+                                <td>{{ team.orders.count()}}</td>
                                 <td>
-                                  {% for task in team.tasks %}
-                                    {{ task.task.name }},
-                                  {% endfor %}
+                                  {{ team.task_desc() }}
                                 </td>
                                 <td>{{ team.status.name }}</td>
                                 <td>{{ team.create_date }}</td>                                
                                 <td>       
-                                    <button type="button" class="btn btn-default view-team">
+                                    <button type="button" class="btn btn-default view-team" data-status="{{team.status_id }}">
                                         <i class='fa fa-eye'></i>
                                     </button>
                                     {% if team.status.id == 7 %}
@@ -203,17 +215,17 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title tam-orders-title">订单列表 </h4>
+                <h4 class="modal-title team-orders-title">订单列表 </h4>
                 <div class="row" style="margin-top:10px;">
+                  <div class="col-md-1 pull-right">
+                        <button class="btn btn-success over-task-btn">完成</button>
+                  </div>
                    {% for task in tasks %}
-                    <div class="col-md-1">
-                        <form action="{{ url_for('task.update_task') }}" method="post">
-                        <input type="hidden" name="task_id" value="{{ task.id }}">
-                        <input type="hidden" name="group_id" class="task-group-id">
-                        <button class="btn btn-success" id="group-task-btn{{task.id}}">{{ task.name }}</button>
-                        </form>
+                    <div class="col-md-1 pull-right">
+                        <button class="btn btn-success order-task-btn" id="group-task-btn{{task.id}}" data-task-id="{{ task.id }}">{{ task.name }}</button>
                     </div>
                     {% endfor %}
+                    
                 </div>
             </div>
             <div class="modal-body">
@@ -230,6 +242,7 @@
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">订单信息 </h4>
+
             </div>
             <div class="modal-body order-info">
                 
@@ -300,13 +313,125 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+
+<div class="modal fade bs-example-modal-sm" id="task-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">分配任务订单 </h4>
+            </div>
+            <form action="{{ url_for('task.add_team')}}" method="post">
+                <input type="hidden" name="oids" id="task-order-ids">
+                <div class="modal-body">
+                  <div class="input-group" style="z-index:999999;">
+                      <span class="input-group-addon">日期:</span>
+                      <input name="name" class="form-control datepicker" data-date="2014-11-01" data-date-format="yyyy-mm-dd" id="group-name" readonly="true">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
+                      <span class="input-group-addon">组号:</span>
+                      <input name="no" class="form-control" value="1">
+                  </div>
+                  <div class="input-group" style="margin-top:10px;">
+                      <span class="input-group-addon">机器号:</span>
+                      <input name="target" class="form-control" value="1">
+                  </div>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade bs-example-modal-sm" id="order-to-team-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">加入团组 </h4>
+            </div>
+            <form action="{{ url_for('task.to_group')}}" method="post">
+                <div class="modal-header">
+                   是否确认这个订单加入
+                  <input type="hidden" id="order-to-team-oid" name="oid"/>
+                </div>
+                <div class="modal-body">
+                 
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade bs-example-modal-sm" id="complete-task-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">完成任务项 </h4>
+            </div>
+            <form action="{{ url_for('task.complete_task') }}" method="post">
+                <div class="modal-body">
+                  是否确认所选订单已完成此任务项
+                  <input type="hidden" id="complete_task_id" name="tid"/>
+                  <input type="hidden" id="complete_order_task_ids" name="oids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade bs-example-modal-sm" id="over-task-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">结束任务 </h4>
+            </div>
+            <form action="{{ url_for('task.over_task')}}" method="post">
+                <div class="modal-body">
+                  是否将所选择的订单结束任务
+                  <input type="hidden" id="over-task-oids" name="oids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {% endblock %}
 
 
 {% block foot_js %}
 {{ super() }}
+<script type="text/javascript" src="{{ url_for('static',filename='js/datepicker/bootstrap-datepicker.js')}}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/datepicker/locales/bootstrap-datepicker.zh-CN.js')}}"></script>
 <script type="text/javascript">
     $(function() {
+
+       //用户table操作
+       $(".check-all").on("ifChanged",function(event){
+         if(this.checked){
+           $(".check-item").iCheck('check');
+         }else{
+           $(".check-item").iCheck('uncheck');
+         }
+       });
+
+       $('.datepicker').datepicker({language:'zh-CN'});
 
         //用户table操作
         $(".modal-body").on("change",".check-all",function(event){
@@ -339,10 +464,15 @@
 
         $('.view-team').on("click",function(){
             selected_id = $(this).parent().siblings().find('.team-id').val();
+            if($(this).attr('data-status') == 7){
+              $('#team-orders-modal').find('.row').hide();
+            }else{
+              $('#team-orders-modal').find('.row').show();
+            }
             $.getJSON('/task/_get_team/'+selected_id,function(data){
-                $('#tam-orders-title').html(data.name+"   "+data.no+"组"+data.target+"号机");
+                $('.team-orders-title').html(data.name+"   "+data.section+"组"+data.no+"号机");
                 $('.task-group-id').val(data.id);
-                $.get('/team/_get_team_orders/'+selected_id,function(data){
+                $.get('/task/_get_team_orders/'+selected_id,function(data){
                     //alert(data);
                     $('#team-orders-modal').find('.modal-body').html(data);
                     $('#team-orders-modal').modal();
@@ -361,6 +491,89 @@
             $('#stop-tid').val(selected_id);
             $('#stop-team-modal').modal();
         });
+
+
+
+
+         $(".task-order").on("click",function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         show = true;
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要分配的订单");
+          }else{ 
+            for(var i=0; i<status_array.length; i++){
+              if(status_array[i] != 6){
+                alert("只有转任务组的订单才能分配!");
+                return;
+              }
+            }
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#task-order-ids').val(uids);
+            $("#task-order-modal").modal();        
+          }
+       });
+
+      $('.one-order-to-task').on('click',function(){
+           selected_id = $(this).parent().siblings().find(':checkbox').val();
+           $('#order-to-team-oid').val(selected_id);
+           $.get('/task/__get_available_team/1',function(data){
+            $('#order-to-team-modal').find('.modal-body').html("");
+             $('#order-to-team-modal').find('.modal-body').append(data);
+             $('#order-to-team-modal').modal();
+           });
+           
+       });
+
+      $('.order-task-btn').on('click',function(){
+        var task_id = $(this).attr('data-task-id');
+        var item_size = $(".order-list").find('.check-item').size();
+        var checked_item_size = 0;
+        var checked_items = new Array();
+        $(".order-list").find('.check-item').each(function(index,element){
+           if(element.checked){
+             checked_item_size++;
+             checked_items.push(element);
+           }
+        });
+        if(checked_item_size == 0){
+           alert("至少选择一个需要删除的项目");
+        }else{
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#complete_order_task_ids').val(uids);
+            $('#complete_task_id').val(task_id);
+            $('#complete-task-modal').modal();
+        }
+      });
+
+      $('.over-task-btn').on('click',function(){
+        var task_id = $(this).attr('data-task-id');
+        var item_size = $(".order-list").find('.check-item').size();
+        var checked_item_size = 0;
+        var checked_items = new Array();
+        $(".order-list").find('.check-item').each(function(index,element){
+           if(element.checked){
+             checked_item_size++;
+             checked_items.push(element);
+           }
+        });
+        if(checked_item_size == 0){
+           alert("至少选择一个需要删除的项目");
+        }else{
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#over-task-oids').val(uids);
+            $('#over-task-modal').modal();
+        }
+      });
     });
 </script>
 {% endblock %}

@@ -2,7 +2,7 @@
 <select name="tid" class="form-control">
 	{% for team in teams %}
 		{% if team.group_type == 1%}
-		<option value="{{ team.id }}">{{ team.name }}  {{ team.no }}组 {{ team.target }}号机</option>
+		<option value="{{ team.id }}">{{ team.name }}  {{ team.section }}组 {{ team.no }}号机</option>
 		{% else %}
 		<option value="{{ team.id }}">{{ team.name }}  {{ team.area.name}}  {{ team.no }}团</option>
 		{% endif %}

@@ -186,7 +186,17 @@ class OrderTeam(db.Model):
     def __repr__(self):
         return '<OrderTeam %r>' % self.name
 
-    def to_task(self):
+
+    def task_desc(self):
+        rows = db.session.execute('select c.name as name,count(a.id) as count from orders a,order_tasks b,group_tasks c where a.id = b.order_id and b.task_id = c.id and a.team_id = '+str(self.id) \
+                                 +' group by c.name order by c.id')
+        desc = ''
+        for row in rows:
+            desc = desc + ('%s : %s ,' % (row['name'],row['count']))
+           
+        return desc
+
+    def to_json(self):
         return {
             'id': self.id,
             'type': self.group_type,
@@ -275,10 +285,19 @@ class Order(db.Model):
     area = db.relationship("Area", backref=db.backref("areas", order_by=id))
 
 
+    tasks = db.relationship("OrderTask",backref=db.backref("order_task", order_by=id))
+
     
 
     def __repr__(self):
         return '<Order %r>' % self.order_no
+
+    def task_by_type(self,task_type):
+        result_tasks = list()
+        for task in self.tasks:
+            if task.task.type == task_type:
+                result_tasks.append(task)
+        return result_tasks
 
     def to_json(self):
         return {
@@ -315,8 +334,11 @@ class OrderTask(db.Model):
     create_man = db.Column(db.Integer,db.ForeignKey('users.id'))
     create_date = db.Column(db.DateTime,default=datetime.now,index=True)
 
+    task = db.relationship("GroupTask", backref=db.backref("group_tasks", order_by=id))
+
     def __repr__(self):
         return '<OrderGroupTask %r>' % self.id
+
 
     @classmethod
     def save(cls,oid,tid,oper):
