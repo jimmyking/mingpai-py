@@ -4,7 +4,7 @@ from flask import jsonify
 from flask import request
 from flask.ext.login import login_required,current_user
 from ..models import Order,Area,OrderProcess,OrderStatus,OrderGroup,OrderGroupProcess
-from ..models import GroupTask,OrderTask,OrderTeam
+from ..models import GroupTask,OrderTask,OrderTeam,IssueType,WarningType
 from datetime import datetime
 from .. import db
 from . import task
@@ -16,8 +16,9 @@ def index():
 	teams =  OrderTeam.query.filter(OrderTeam.status_id.in_([7,8])).all()
 	orders = Order.query.filter_by(status_id=6).order_by('id desc').all()
 	tasks = GroupTask.query.filter_by(type=1).order_by('id desc').all()
-
-	return render_template('task/index.html',teams=teams,orders=orders,tasks=tasks)
+	issuetypes = IssueType.query.order_by('id').all()
+	warninges = WarningType.query.order_by('id').all()
+	return render_template('task/index.html',teams=teams,orders=orders,tasks=tasks,issuetypes=issuetypes,warninges=warninges)
 
 @task.route('/add_team',methods=['POST'])
 @login_required

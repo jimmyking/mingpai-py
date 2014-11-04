@@ -59,7 +59,7 @@
                                   <th>电话</th>
                                   <th>金额</th>
                                   <th>支付</th>
-                                  
+                                  <th>备注</th>
 
                                   <th style="width: 200px">操作</th>
                               </tr>
@@ -92,7 +92,11 @@
                                   <td>{{ order.mobile }}</td>
                                   <td>{{ order.amount }}</td>
                                   <td>{{ order.paytype }}</td>
-                                  
+                                  <td style="background-color: {% if order.warning %} {{ order.warning.color }}  {% else %}  {% endif %}">
+                                  {% if order.warning %}
+                                    {{ order.warning.name }}
+                                  {% endif %}
+                                  </td>
                                   <td>  
                                         <input type="hidden" class="area_id" value="{{ order.area.id }}">
                                         <input type="hidden" class="status_id" value="{{ order.order_status.id }}">    
@@ -412,6 +416,99 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
+
+
+<div class="modal fade bs-example-modal-sm" id="bug-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">异常订单 </h4>
+            </div>
+            <form action="{{ url_for('order.bug_order')}}" method="post">
+                <div class="modal-body">
+                  标记异常订单
+                  <input type="hidden" id="bug-oid" name="oid"/>
+                  <div class="form-group">
+                    <div class="input-group">
+                          <span class="input-group-addon">异常类型:</span>
+                          <select name="issue_type" class="form-control">
+                            {% for it in issuetypes %}
+                            <option value="{{ it.id }}">{{ it.name }}</option>
+                            {% endfor %}
+                          </select>
+                          <!-- <input name="type_id" class="form-control long-input"> -->
+                    </div>
+                  </div>
+                   <div class="form-group">
+                   <div class="input-group">
+                          <span class="input-group-addon">异常备注:</span>
+                          <input name="issue_memo" class="form-control">
+                    </div>
+                   </div>
+                    
+                  
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade bs-example-modal-sm" id="warning-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">添加备注 </h4>
+            </div>
+            <form action="{{ url_for('order.add_warning') }}" method="post">
+                <div class="modal-body">
+                  <div class="input-group">
+                  <span class="input-group-addon">备注类型:</span>
+                  <select name="warning_type" class="form-control">
+                            {% for wy in warninges %}
+                              <option value="{{ wy.id }}">{{ wy.name }}</option>
+                            {% endfor %}
+                          </select>
+                  </div>
+                  <input type="hidden" id="warning-order-oid" name="oid"/>
+                  <div class="input-group">
+                      <span class="input-group-addon">内容:</span>
+                      <input name="content" class="form-control">
+                  </div>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<div class="modal fade bs-example-modal-sm" id="unbug-order-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">解除异常订单 </h4>
+            </div>
+            <form action="{{ url_for('order.unbug_order')}}" method="post">
+                <div class="modal-body">
+                  是否解除异常
+                  <input type="hidden" id="unbug-oid" name="oid"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {% endblock %}
 
 
@@ -443,6 +540,14 @@
         });
 
         $(".modal-body").on("click",".view-order",function(event){
+            var order_id = $(this).parent().siblings().find('.select-item').val();
+            $.get('/order/__get_info/'+order_id,function(data){
+                $('.order-info').html(data);
+            });
+            $("#view-order-modal").modal();
+        });
+
+        $(".edit-user").on("click",function(event){
             var order_id = $(this).parent().siblings().find(':checkbox').val();
             $.get('/order/__get_info/'+order_id,function(data){
                 $('.order-info').html(data);
@@ -574,6 +679,26 @@
             $('#over-task-modal').modal();
         }
       });
+
+
+      $(".modal-body").on("click",".bug-order",function(){
+          var order_id = $(this).parent().siblings().find('.select-item').val();
+         $('#bug-oid').val(order_id);
+         $('#bug-order-modal').modal();
+       });
+
+       $(".modal-body").on("click",".unbug-order",function(){
+          var order_id = $(this).parent().siblings().find('.select-item').val();
+         $('#unbug-oid').val(order_id);
+         $('#unbug-order-modal').modal();
+       });
+
+       $('.modal-body').on('click',".warning-order",function(){
+           var order_id = $(this).parent().siblings().find('.select-item').val();
+           $('#warning-order-oid').val(order_id);
+        
+           $('#warning-order-modal').modal();
+       });
     });
 </script>
 {% endblock %}
