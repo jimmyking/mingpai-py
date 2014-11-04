@@ -17,6 +17,46 @@
 
     <!-- Main content -->
     <section class="content">
+
+        <div class="box box-solid">
+          <div class="box-body">
+             <form action="{{ url_for('team.index') }}" method="get">
+             <div class="form-inline">
+              
+              <div class="input-group">
+                          <span class="input-group-addon">服务器:</span>
+                          <select name="area_id" class="form-control">
+                            <option value="0">所有</option>
+                            {% for ar in areas %}
+                            <option value="{{ ar.id }}"  {% if ar.id == request.args.get('area_id') | int %} selected="true" {% endif %}>{{ ar.name }}</option>
+                            {% endfor %}
+                          </select>
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">状态:</span>
+                          <select name="status_id" class="form-control">
+                            <option value="0" {% if "0" == request.args.get('status_id')%} selected="true" {% endif %}>未完成</option>
+                            <option value="1" {% if "1" == request.args.get('status_id') %} selected="true" {% endif %}>已完成</option>
+                           
+                          </select>
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">日期:</span>
+                          <input type="text" name="daterange" id="search-daterange" size="26" value="{% if request.args.get('daterange') != None %}{{ request.args.get('daterange') }}{% endif %}">
+                          <input type="hidden" name="start-date" id="start-date" value="{% if request.args.get('start-date') != None %}{{ request.args.get('start-date') }}{% endif %}">
+                          <input type="hidden" name="end-date" id="end-date" value="{% if request.args.get('end-date') != None %}{{ request.args.get('end-date') }}{% endif %}">
+              </div>
+              <div class="pull-right">
+              <button class="btn btn-warning">查询</button>
+              </div>
+             </div>
+             
+             </form>
+          </div>
+        </div>
+
+
+
         <div class="row">
             <div class="col-md-12">
                 <div class="box">
@@ -222,6 +262,20 @@
 <script type="text/javascript">
     $(function() {
 
+
+        $('#search-daterange').daterangepicker({
+          format:'YYYY-MM-DD',
+          locale: { cancelLabel: '取消',
+                  applyLabel: '应用',
+                  monthNames:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+                  daysOfWeek:['日','一','二','三','四','五','六'],
+                  firstDay:1
+
+                  } 
+          },function(start, end, label) {
+                  $('#start-date').val(start.format('YYYY-MM-DD'));
+                  $('#end-date').val(end.format('YYYY-MM-DD'));
+        });
         //用户table操作
         $(".modal-body").on("change",".check-all",function(event){
             if(this.checked){

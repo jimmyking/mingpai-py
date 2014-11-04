@@ -68,8 +68,21 @@
              <div class="form-inline inline-form-magin">
              <div class="input-group">
                           <span class="input-group-addon">异常订单:</span>
-
-                          <input type="checkbox" value="1" name="is_issue" class="icheckbox_square-blue" {% if request.args.get('is_issue') | int == 1 %}checked="true"{% endif %}>
+                          <select name="is_issue" class="form-control">
+                            <option value="">所有</option>
+                            <option value="1" {% if "1" == request.args.get('is_issue') %} selected="true" {% endif %}>异常</option>
+                            <option value="0" {% if "0" == request.args.get('is_issue') %} selected="true" {% endif %}>正常</option>
+                            
+                          </select>
+                          
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">旺旺:</span>
+                          <input name="wangwang" value="{% if request.args.get('wangwang') != None %}{{ request.args.get('wangwang') }}{% endif %}" class="form-control">
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">手机:</span>
+                          <input name="mobile" value="{% if request.args.get('mobile') != None %}{{ request.args.get('mobile') }}{% endif %}" class="form-control">
               </div>
               <div class="pull-right">
               <button class="btn btn-warning">查询</button>
@@ -262,11 +275,10 @@
                             <option value="{{ ot.id }}">{{ ot.name }}</option>
                             {% endfor %}
                           </select>
-                          <!-- <input name="type_id" class="form-control long-input"> -->
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">淘宝时间:</span>
-                          <input name="taobao_date" class="form-control datetimepicker" placeholder="yyyy-mm-dd hh24:mi">
+                          <input name="taobao_date" class="form-control datetimepicker" readonly="true">
                         </div>
                         
                         <div class="input-group">
@@ -496,9 +508,10 @@
                             <option value="{{ ot.id }}">{{ ot.name }}</option>
                             {% endfor %}
                           </select>
-                          <!-- <input name="type_id" class="form-control long-input"> -->
                         </div>
-                        <div class="input-group" style="width:225px;">
+                        <div class="input-group">
+                          <span class="input-group-addon">淘宝时间:</span>
+                          <input name="taobao_date" id="edit-taobao_date" class="form-control datetimepicker" readonly="true">
                         </div>
                         <div class="input-group">
                           <span class="input-group-addon">所在区:</span>
@@ -774,10 +787,18 @@
        $('.datepicker').datepicker({language:'zh-CN'});
 
        $('.datetimepicker').daterangepicker({
-        format:'YYYY-MM-DD hh:mm',
+        format:'YYYY-MM-DD HH:mm',
         timePicker:true,
         singleDatePicker:true,
-        timePicker12Hour:false
+        timePicker12Hour:false,
+        timePickerIncrement:5,
+        locale: { cancelLabel: '取消',
+                  applyLabel: '应用',
+                  monthNames:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+                  daysOfWeek:['日','一','二','三','四','五','六'],
+                  firstDay:1
+
+                  } 
        });
 
        
@@ -800,6 +821,7 @@
             $('#edit-amount').val(data.amount);
             $('#edit-paytype').val(data.paytype);
             $('#edit-memo').val(data.memo);
+            $('#edit-taobao_date').val(data.taobao_date);
             $.get('/order/__get_log/'+selected_id,function(data){
               $('#order-logs').html(data);
               $('#edit-user-modal').modal();

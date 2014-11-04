@@ -16,9 +16,30 @@ from werkzeug.datastructures import Headers
 @team.route('/')
 @login_required
 def index():
-	teams =  OrderGroup.query.filter_by(group_type=0).filter(OrderGroup.status_id.in_([3,4])).all()
+	#teams =  OrderGroup.query.filter_by(group_type=0).filter(OrderGroup.status_id.in_([3,4])).all()
+	teams =  OrderGroup.query.filter_by(group_type=0)
+	areas = Area.query.order_by('id').all()
 	tasks = GroupTask.query.filter_by(type=0).order_by('id').all()
-	return render_template('team/index.html',teams=teams,tasks=tasks)
+
+	start_date = request.args.get('start-date')
+	if start_date:
+		teams = teams.filter(db.cast(OrderGroup.name,db.DATE)>=start_date)
+	end_date = request.args.get('end_date')
+	if end_date:
+		teams = teams.filter(db.cast(OrderGroup.name,db.DATE)<end_date)
+
+	status_id = request.args.get('status_id')
+	if status_id == '0':
+		teams = teams.filter(OrderGroup.status_id.in_([3,4]))
+	else:
+		teams = teams.filter(OrderGroup.status_id.in_([5]))
+	area_id = request.args.get('area_id')
+	if area_id and area_id != '0':
+		teams = teams.filter_by(area_id=area_id)
+	
+	
+	teams = teams.order_by('id').all()
+	return render_template('team/index.html',teams=teams,tasks=tasks,areas=areas)
 
 @team.route('/add_team',methods=['POST'])
 @login_required

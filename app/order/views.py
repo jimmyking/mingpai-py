@@ -38,8 +38,15 @@ def orders():
 	if type_id and type_id !='0':
 		order_query = order_query.filter_by(type_id=type_id)
 	is_issue = request.args.get('is_issue')
-	if is_issue and is_issue =='1':
-		order_query = order_query.filter_by(is_issue=1)
+	if is_issue:
+		order_query = order_query.filter_by(is_issue=is_issue)
+	wangwang = request.args.get('wangwang')
+	if wangwang:
+		order_query = order_query.filter_by(wangwang=wangwang)
+	mobile = request.args.get('mobile')
+	if mobile:
+		order_query = order_query.filter_by(mobile=mobile)
+
 
 	orders = order_query.order_by('id desc').all()
 
@@ -63,11 +70,12 @@ def add_order():
 	paytype = request.form['paytype']
 	memo = request.form['memo']
 	warning_type = request.form['warning_type']
+	taobao_date = request.form['taobao_date']
 	order = Order(type_id=int(type_id),area_id=int(area_id),acter_name=acter_name, \
 		            acter_account=acter_account,acter_password=acter_password, \
 		            start_level=start_level,end_level=end_level,now_level=start_level, \
 		            wangwang=wangwang,qq=qq,mobile=mobile,amount=amount, \
-		            paytype=paytype,memo=memo,warning_type=warning_type)
+		            paytype=paytype,memo=memo,warning_type=warning_type,taobao_date=taobao_date)
 	order.status_id=1
 	order.create_man = current_user.id
 	order.init_order_no()
@@ -94,11 +102,12 @@ def update_order():
 	amount = request.form['amount']
 	paytype = request.form['paytype']
 	memo = request.form['memo']
+	taobao_date = request.form['taobao_date']
 	Order.query.filter_by(id=gid).update({Order.type_id:type_id,Order.area_id:area_id,Order.acter_name:acter_name, \
 										  Order.acter_account:acter_account,Order.acter_password:acter_password, \
 										  Order.start_level:start_level,Order.end_level:end_level,Order.wangwang:wangwang, \
 										  Order.qq:qq,Order.mobile:mobile,Order.amount:amount,Order.paytype:paytype, \
-										  Order.memo:memo,Order.update_man:current_user.id,Order.update_date:datetime.now()})
+										  Order.memo:memo,Order.update_man:current_user.id,Order.update_date:datetime.now(),Order.taobao_date:taobao_date})
 	db.session.commit()
 	OrderProcess.save(gid,current_user.id,"修改订单")
 	return redirect(request.referrer)

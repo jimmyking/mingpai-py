@@ -320,7 +320,9 @@ class Order(db.Model):
             'amount': self.amount,
             'paytype': self.paytype,
             'memo': self.memo,
+            'taobao_date' : self.taobao_date.strftime('%Y-%m-%d %H:%M') if self.taobao_date else "",
         }
+
 
     def init_order_no(self):
         row = db.session.query(Order.id,db.func.count('*').label('count')).filter(db.cast(Order.create_date,db.DATE)==date.today()).first()
