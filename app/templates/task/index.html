@@ -222,6 +222,12 @@
                 <h4 class="modal-title team-orders-title">订单列表 </h4>
                 <div class="row" style="margin-top:10px;">
                   <div class="col-md-1 pull-right">
+                    <form action="{{ url_for('task.export') }}" method="get" style="margin:0px;display: inline">
+                        <input name="tid" id="task-export-id" type="hidden" class="form-control">
+                        <button class="btn btn-primary"><i class='fa fa-save'></i></button>
+                    </form>
+                  </div>
+                  <div class="col-md-1 pull-right">
                         <button class="btn btn-success over-task-btn">完成</button>
                   </div>
                    {% for task in tasks %}
@@ -541,6 +547,7 @@
 
         $(".modal-body").on("click",".view-order",function(event){
             var order_id = $(this).parent().siblings().find('.select-item').val();
+
             $.get('/order/__get_info/'+order_id,function(data){
                 $('.order-info').html(data);
             });
@@ -576,6 +583,7 @@
             }
             $.getJSON('/task/_get_team/'+selected_id,function(data){
                 $('.team-orders-title').html(data.name+"   "+data.section+"组"+data.no+"号机");
+                $('#task-export-id').val(selected_id)
                 $('.task-group-id').val(data.id);
                 $.get('/task/_get_team_orders/'+selected_id,function(data){
                     //alert(data);
