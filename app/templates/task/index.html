@@ -39,7 +39,7 @@
                       </span>
                     </div>
                         
-                        <table class="table table-bordered table-hover">
+                        <table class="table table-bordered table-hover pre-order-list">
                               <tr>
                                   <th style="width: 10px">
                                     <input type="checkbox" class="icheckbox_square-blue check-all"/>
@@ -425,9 +425,9 @@
        //用户table操作
        $(".check-all").on("ifChanged",function(event){
          if(this.checked){
-           $(".check-item").iCheck('check');
+           $('.pre-order-list').find(".check-item").iCheck('check');
          }else{
-           $(".check-item").iCheck('uncheck');
+           $('.pre-order-list').find(".check-item").iCheck('uncheck');
          }
        });
 
@@ -436,9 +436,9 @@
         //用户table操作
         $(".modal-body").on("change",".check-all",function(event){
             if(this.checked){
-                $(".check-item").iCheck('check');
+                $('.order-list').find(".check-item").iCheck('check');
             }else{
-                $(".check-item").iCheck('uncheck');
+                $('.order-list').find(".check-item").iCheck('uncheck');
             }
         });
 

@@ -4,7 +4,7 @@ from flask import jsonify
 from flask import request,Response
 from flask.ext.login import login_required,current_user
 from ..models import Order,Area,OrderProcess,OrderStatus,OrderGroup,OrderGroupProcess
-from ..models import GroupTask,OrderTask,OrderGroupTask
+from ..models import GroupTask,OrderTask,OrderGroupTask,IssueType,WarningType
 from datetime import datetime
 from .. import db
 from . import team
@@ -19,6 +19,8 @@ def index():
 	#teams =  OrderGroup.query.filter_by(group_type=0).filter(OrderGroup.status_id.in_([3,4])).all()
 	teams =  OrderGroup.query.filter_by(group_type=0)
 	areas = Area.query.order_by('id').all()
+	issuetypes = IssueType.query.order_by('id').all()
+	warninges = WarningType.query.order_by('id').all()
 	tasks = GroupTask.query.filter_by(type=0).order_by('id').all()
 
 	start_date = request.args.get('start-date')
@@ -29,17 +31,17 @@ def index():
 		teams = teams.filter(db.cast(OrderGroup.name,db.DATE)<end_date)
 
 	status_id = request.args.get('status_id')
-	if status_id == '0':
-		teams = teams.filter(OrderGroup.status_id.in_([3,4]))
-	else:
+	if status_id == '1':
 		teams = teams.filter(OrderGroup.status_id.in_([5]))
+	else:
+		teams = teams.filter(OrderGroup.status_id.in_([3,4]))
 	area_id = request.args.get('area_id')
 	if area_id and area_id != '0':
 		teams = teams.filter_by(area_id=area_id)
 	
 	
 	teams = teams.order_by('id').all()
-	return render_template('team/index.html',teams=teams,tasks=tasks,areas=areas)
+	return render_template('team/index.html',teams=teams,tasks=tasks,areas=areas,issuetypes=issuetypes,warninges=warninges)
 
 @team.route('/add_team',methods=['POST'])
 @login_required

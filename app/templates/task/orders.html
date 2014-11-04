@@ -54,6 +54,8 @@
             <i class='fa fa-wrench'></i>
         </button>
 
+        
+        {% if order.status_id !=9 %}
         <form action="{{ url_for('task.update_level') }}" method="post" style="margin:0px; display:inline-block;">
             <input name="now_level" size="2" value="{{ order.now_level }}"/>
             <input type="hidden" name="oid" value="{{ order.id }}"/>
@@ -61,11 +63,22 @@
             更新
             </button>
         </form>
-{% if order.status_id !=9 %}
         <button type="button" class="btn btn-default order-out">
             <i class='fa fa-sign-out'></i>
         </button>
-{% endif %}
+        {% endif %}
+        {% if order.is_issue %}
+          <button type="button" class="btn btn-default unbug-order">
+            <i class='fa fa-smile-o'></i>
+          </button>
+        {% else %}
+          <button type="button" class="btn btn-default bug-order">
+            <i class='fa fa-bug'></i>
+          </button>
+        {% endif %}
+        <button type="button" class="btn btn-default warning-order">
+            <i class='fa fa-bookmark'></i>
+        </button>
     </td>
   </tr>
   {% endfor %}

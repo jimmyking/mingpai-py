@@ -15,7 +15,7 @@ from . import task
 def index():
 	teams =  OrderTeam.query.filter(OrderTeam.status_id.in_([7,8])).all()
 	orders = Order.query.filter_by(status_id=6).order_by('id desc').all()
-	tasks = GroupTask.query.filter_by(type=1).order_by('id').all()
+	tasks = GroupTask.query.filter_by(type=1).order_by('id desc').all()
 
 	return render_template('task/index.html',teams=teams,orders=orders,tasks=tasks)
 
