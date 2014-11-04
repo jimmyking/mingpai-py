@@ -192,7 +192,7 @@ class OrderTeam(db.Model):
                                  +' group by c.name order by c.id')
         desc = ''
         for row in rows:
-            desc = desc + ('%s : %s ,' % (row['name'],row['count']))
+            desc = desc + ('%s : %s ||   ' % (row['name'],row['count']))
            
         return desc
 

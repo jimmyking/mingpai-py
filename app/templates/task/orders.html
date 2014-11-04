@@ -46,8 +46,14 @@
         {{task.task.name}}
     {% endfor %}
     </td>
-    <td>{{ order.wangwang }}</td>
-    <td>{{ order.qq }}</td>
+    <td>
+        {{ order.wangwang }}
+        <a href="http://amos.im.alisoft.com/msg.aw?v=2&uid={{ order.wangwang }}&site=cntaobao&s=1&charset=utf-8" target="_blank">旺旺</a>
+        </td>
+      <td>
+        {{ order.qq }}
+        <a href="http://wpa.qq.com/msgrd?v=3&uin={{order.qq}}&site=qq&menu=yes" target="_blank">QQ</a>
+      </td>
     <td>{{ order.mobile }}</td>
     <td>{{ order.amount }}</td>
     <td>{{ order.paytype }}</td>
