@@ -4,7 +4,7 @@ from flask import jsonify
 from flask import request,Response
 from flask.ext.login import login_required,current_user
 from ..models import Order,Area,OrderProcess,OrderStatus,OrderGroup,OrderGroupProcess
-from ..models import GroupTask,OrderTask,OrderTeam,IssueType,WarningType
+from ..models import GroupTask,OrderTask,OrderTeam,IssueType,WarningType,OrderWarning
 from datetime import datetime
 from .. import db
 from . import task
@@ -103,11 +103,14 @@ def update_task():
 @login_required
 def out_team():
 	oid = request.form['oid']
+	order = Order.query.filter_by(id=oid).first()
+	team_id = order.team_id
 	Order.query.filter_by(id=oid).update({Order.team_id:None,Order.status_id:2,Order.update_man:current_user.id, \
 		                                        Order.update_date:datetime.now()},synchronize_session=False)
 	OrderProcess.save(oid,current_user.id,"订单踢出团队")
 	db.session.commit()
-	return redirect(url_for('task.index'))
+
+	return jsonify({'result':True,'team_id':team_id})
 
 
 @task.route('/to_group',methods=['POST'])
@@ -140,7 +143,8 @@ def complete_task():
 			pass
 		else:
 			OrderTask.save(oid,tid,current_user.id)
-	return redirect(request.referrer)
+	order = Order.query.filter_by(id=oids.split(',')[0]).first()
+	return jsonify({'result':True,'team_id':order.team_id})
 
 
 @task.route('/over_task',methods=['POST'])
@@ -162,9 +166,49 @@ def update_level():
 	Order.query.filter_by(id=oid).update({Order.now_level:now_level,Order.update_man:current_user.id, \
 		                                                      Order.update_date:datetime.now()},synchronize_session=False)
 	
+	order = Order.query.filter_by(id=oid).first()
 	OrderProcess.save(oid,current_user.id,u"更新等级至 %s" %now_level)
-	return redirect(request.referrer)
+	return jsonify({'result':True,'team_id':order.team_id})
 
+
+@task.route('/bug_order',methods=['POST'])
+@login_required
+def bug_order():
+	oid = request.form['oid']
+	issue_type = request.form['issue_type']
+	issue_memo = request.form['issue_memo']
+	Order.query.filter_by(id=oid).update({Order.is_issue:1,Order.issue_id:issue_type,Order.issue_memo:issue_memo, \
+										  Order.update_date:datetime.now(),Order.update_man:current_user.id})
+	db.session.commit()
+
+	OrderProcess.save(oid,current_user.id,u"标记为异常订单 异常信息为: %s" %issue_memo)
+	order = Order.query.filter_by(id=oid).first()
+	return jsonify({'result':True,'team_id':order.team_id})
+
+@task.route('/unbug_order',methods=['POST'])
+@login_required
+def unbug_order():
+	oid = request.form['oid']
+	Order.query.filter_by(id=oid).update({Order.is_issue:0,Order.issue_id:None,Order.issue_memo:"", \
+										  Order.update_date:datetime.now(),Order.update_man:current_user.id})
+	db.session.commit()
+	OrderProcess.save(oid,current_user.id,"解除异常")
+	order = Order.query.filter_by(id=oid).first()
+	return jsonify({'result':True,'team_id':order.team_id})
+
+@task.route('/add_warning',methods=['POST'])
+@login_required
+def add_warning():
+	oid = request.form['oid']
+	warning_type = request.form['warning_type']
+	content = request.form['content']
+
+	Order.query.filter_by(id=oid).update({Order.warning_type:warning_type,Order.update_date:datetime.now(),Order.update_man:current_user.id},synchronize_session=False)
+	db.session.commit()
+	OrderWarning.save(oid,warning_type,content,current_user.id)
+	
+	order = Order.query.filter_by(id=oid).first()
+	return jsonify({'result':True,'team_id':order.team_id})
 
 @task.route('/_get_team/<tid>')
 @login_required

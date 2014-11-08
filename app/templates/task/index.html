@@ -310,15 +310,13 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">是否将订单踢出本组 </h4>
             </div>
-            <form action="{{ url_for('task.out_team') }}" method="post">
                 <div class="modal-body">
                   是否将订单踢出本组
                   <input type="hidden" id="out-order-id" name="oid"/>
                 </div>
                 <div class="modal-footer clearfix">
-                  <button type="submit" class="btn btn-primary">提交</button>
+                  <button type="submit" class="btn btn-primary ajax-order-out">提交</button>
                 </div>
-            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -387,16 +385,14 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">完成任务项 </h4>
             </div>
-            <form action="{{ url_for('task.complete_task') }}" method="post">
                 <div class="modal-body">
                   是否确认所选订单已完成此任务项
                   <input type="hidden" id="complete_task_id" name="tid"/>
                   <input type="hidden" id="complete_order_task_ids" name="oids"/>
                 </div>
                 <div class="modal-footer clearfix">
-                  <button type="submit" class="btn btn-primary">提交</button>
+                  <button type="submit" class="btn btn-primary ajax-complete-task">提交</button>
                 </div>
-            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -431,14 +427,14 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">异常订单 </h4>
             </div>
-            <form action="{{ url_for('order.bug_order')}}" method="post">
                 <div class="modal-body">
                   标记异常订单
                   <input type="hidden" id="bug-oid" name="oid"/>
+                  <input type="hidden" id="ajax-bug-flash" value="0" />
                   <div class="form-group">
                     <div class="input-group">
                           <span class="input-group-addon">异常类型:</span>
-                          <select name="issue_type" class="form-control">
+                          <select name="issue_type" id="issue_type" class="form-control">
                             {% for it in issuetypes %}
                             <option value="{{ it.id }}">{{ it.name }}</option>
                             {% endfor %}
@@ -449,16 +445,15 @@
                    <div class="form-group">
                    <div class="input-group">
                           <span class="input-group-addon">异常备注:</span>
-                          <input name="issue_memo" class="form-control">
+                          <input name="issue_memo" id="issue_memo" class="form-control">
                     </div>
                    </div>
                     
                   
                 </div>
                 <div class="modal-footer clearfix">
-                  <button type="submit" class="btn btn-primary">提交</button>
+                  <button type="submit" class="btn btn-primary ajax-bug-order">提交</button>
                 </div>
-            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -470,11 +465,10 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">添加备注 </h4>
             </div>
-            <form action="{{ url_for('order.add_warning') }}" method="post">
                 <div class="modal-body">
                   <div class="input-group">
                   <span class="input-group-addon">备注类型:</span>
-                  <select name="warning_type" class="form-control">
+                  <select name="warning_type" id="warning_type" class="form-control">
                             {% for wy in warninges %}
                               <option value="{{ wy.id }}">{{ wy.name }}</option>
                             {% endfor %}
@@ -483,13 +477,12 @@
                   <input type="hidden" id="warning-order-oid" name="oid"/>
                   <div class="input-group">
                       <span class="input-group-addon">内容:</span>
-                      <input name="content" class="form-control">
+                      <input name="content" id="content" class="form-control">
                   </div>
                 </div>
                 <div class="modal-footer clearfix">
-                  <button type="submit" class="btn btn-primary">提交</button>
+                  <button type="submit" class="btn btn-primary ajax-warning-order">提交</button>
                 </div>
-            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -502,15 +495,14 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">解除异常订单 </h4>
             </div>
-            <form action="{{ url_for('order.unbug_order')}}" method="post">
                 <div class="modal-body">
                   是否解除异常
                   <input type="hidden" id="unbug-oid" name="oid"/>
+                  <input type="hidden" id="ajax-unbug-flash" value="0" />
                 </div>
                 <div class="modal-footer clearfix">
-                  <button type="submit" class="btn btn-primary">提交</button>
+                  <button type="submit" class="btn btn-primary ajax-unbug-order">提交</button>
                 </div>
-            </form>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -568,8 +560,19 @@
             var order_id = $(this).parent().siblings().find(':checkbox').val();
             $('#out-order-id').val(order_id);
             $("#order-out-modal").modal();
-             
-            
+        });
+
+        $(".ajax-order-out").on("click",function(){
+            var oid = $('#out-order-id').val();
+            $.post("/task/out_team",{oid:oid},function(data){
+            if (data.result) {
+              alert("操作成功");
+              $("#order-out-modal").modal("hide");
+              $.get('/task/_get_team_orders/'+data.team_id,function(data){
+                $('#team-orders-modal').find('.modal-body').html(data);
+              });
+            };
+          });
         });
          
        
@@ -659,13 +662,27 @@
            }
         });
         if(checked_item_size == 0){
-           alert("至少选择一个需要删除的项目");
+           alert("至少选择一个需要更新的项目");
         }else{
             uids = $(checked_items).map(function(){return $(this).val()}).get().join();
             $('#complete_order_task_ids').val(uids);
             $('#complete_task_id').val(task_id);
             $('#complete-task-modal').modal();
         }
+      });
+
+      $('.ajax-complete-task').on("click",function(){
+          var order_id = $('#complete_order_task_ids').val();
+          var task_id = $('#complete_task_id').val();
+          $.post("/task/complete_task",{oids:order_id,tid:task_id},function(data){
+            if (data.result) {
+              alert("操作成功");
+              $('#complete-task-modal').modal("hide");
+              $.get('/task/_get_team_orders/'+data.team_id,function(data){
+                $('#team-orders-modal').find('.modal-body').html(data);
+              });
+            }
+          });
       });
 
       $('.over-task-btn').on('click',function(){
@@ -688,24 +705,102 @@
         }
       });
 
+      $(".bug-order").on("click",function(){
+         var order_id = $(this).parent().siblings().find(':checkbox').val();
+         $('#bug-oid').val(order_id);
+         $('#bug-order-modal').modal();
+       });
 
       $(".modal-body").on("click",".bug-order",function(){
           var order_id = $(this).parent().siblings().find('.select-item').val();
          $('#bug-oid').val(order_id);
+         $('#ajax-bug-flash').val(1);
          $('#bug-order-modal').modal();
+       });
+
+      $(".ajax-bug-order").on("click",function(){
+         var order_id = $('#bug-oid').val();
+         var issue_type = $('#issue_type').val();
+         var issue_memo = $('#issue_memo').val();
+         var is_ajax = $('#ajax-bug-flash').val();
+         $.post("/task/bug_order",{oid:order_id,issue_type:issue_type,issue_memo:issue_memo},function(data){
+            alert("操作成功");
+            if(is_ajax == 0){
+                location.reload()
+            }else{
+              $('#bug-order-modal').modal("hide");
+              $.get('/task/_get_team_orders/'+data.team_id,function(data){
+                $('#team-orders-modal').find('.modal-body').html(data);
+              });
+            }
+         });
+      });
+
+      $(".unbug-order").on("click",function(){
+          var order_id = $(this).parent().siblings().find(':checkbox').val();
+         $('#unbug-oid').val(order_id);
+         $('#unbug-order-modal').modal();
        });
 
        $(".modal-body").on("click",".unbug-order",function(){
           var order_id = $(this).parent().siblings().find('.select-item').val();
          $('#unbug-oid').val(order_id);
+         $('#ajax-unbug-flash').val(1);
          $('#unbug-order-modal').modal();
        });
+
+       $(".ajax-unbug-order").on("click",function(){
+         var order_id = $('#unbug-oid').val();
+         var is_ajax = $('#ajax-unbug-flash').val();
+         $.post("/task/unbug_order",{oid:order_id},function(data){
+            alert("操作成功");
+            if(is_ajax == 0){
+                location.reload()
+            }else{
+              $('#unbug-order-modal').modal("hide");
+              $.get('/task/_get_team_orders/'+data.team_id,function(data){
+                $('#team-orders-modal').find('.modal-body').html(data);
+              });
+            }
+         });
+      });
+
+
+
 
        $('.modal-body').on('click',".warning-order",function(){
            var order_id = $(this).parent().siblings().find('.select-item').val();
            $('#warning-order-oid').val(order_id);
         
            $('#warning-order-modal').modal();
+       });
+
+       $('.ajax-warning-order').on("click",function(){
+           var order_id = $('#warning-order-oid').val();
+           var warning_type = $('#warning_type').val();
+           var content = $('#content').val();
+           $.post("/task/add_warning",{oid:order_id,warning_type:warning_type,content:content},function(data){
+            if (data.result) {
+              alert("操作成功");
+              $('#warning-order-modal').modal("hide");
+              $.get('/task/_get_team_orders/'+data.team_id,function(data){
+                $('#team-orders-modal').find('.modal-body').html(data);
+              });
+            }
+          });
+       });
+
+       $('.modal-body').on('click',".ajax-update-level",function(){
+          var order_id = $(this).parent().siblings().find('.select-item').val();
+          var now_level = $(this).parent().find('input').val();
+          $.post("/task/update_level",{oid:order_id,now_level:now_level},function(data){
+            if (data.result) {
+              alert("操作成功");
+              $.get('/task/_get_team_orders/'+data.team_id,function(data){
+                $('#team-orders-modal').find('.modal-body').html(data);
+              });
+            };
+          });
        });
     });
 </script>
