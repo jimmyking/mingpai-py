@@ -43,7 +43,7 @@
     <td>{{ order.now_level }}</td>
     <td>
     {% for task in order.task_by_type(1) %}
-        {{task.task.name}}
+        {{task.task.name}}:{{task.creator.name}}
     {% endfor %}
     </td>
     <td>

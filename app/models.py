@@ -339,7 +339,7 @@ class OrderTask(db.Model):
     create_date = db.Column(db.DateTime,default=datetime.now,index=True)
 
     task = db.relationship("GroupTask", backref=db.backref("group_tasks", order_by=id))
-
+    creator = db.relationship("User", backref=db.backref("user_tasks", order_by=id))
     def __repr__(self):
         return '<OrderGroupTask %r>' % self.id
 
