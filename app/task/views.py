@@ -16,7 +16,27 @@ from werkzeug.datastructures import Headers
 @task.route('/')
 @login_required
 def index():
-	teams =  OrderTeam.query.filter(OrderTeam.status_id.in_([7,8])).all()
+	teams =  OrderTeam.query
+
+	section = request.args.get('section')
+	if section:
+		teams = teams.filter(OrderTeam.section==section)
+	no = request.args.get('no')
+	if no:
+		teams = teams.filter(OrderTeam.no==no)
+	status_id = request.args.get('status_id')
+	if status_id == '1':
+		teams = teams.filter(OrderTeam.status_id.in_([9]))
+	else:
+		teams = teams.filter(OrderTeam.status_id.in_([7,8]))
+	start_date = request.args.get('start-date')
+	if start_date:
+		teams = teams.filter(db.cast(OrderTeam.name,db.DATE)>=start_date)
+	end_date = request.args.get('end_date')
+	if end_date:
+		teams = teams.filter(db.cast(OrderTeam.name,db.DATE)<end_date)
+
+	teams = teams.order_by('id').all()
 	orders = Order.query.filter_by(status_id=6).order_by('id desc').all()
 	tasks = GroupTask.query.filter_by(type=1).order_by('id desc').all()
 	issuetypes = IssueType.query.order_by('id').all()
