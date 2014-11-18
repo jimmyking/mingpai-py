@@ -157,6 +157,11 @@
 
 
                 <div class="row" style="margin-top:10px;">
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-info order-to-task">
+                                    <i class='fa fa-share'></i>
+                    </button>
+                    </div>
                    {% for task in tasks %}
                     <div class="col-md-1">
                         <form action="{{ url_for('team.update_task') }}" method="post">
@@ -344,7 +349,25 @@
     </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-
+<div class="modal fade bs-example-modal-sm" id="order-to-task-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">订单转任务组 </h4>
+            </div>
+            <form action="{{ url_for('team.wait_task')}}" method="post">
+                <div class="modal-body">
+                  是否确认这些订单转任务组
+                  <input type="hidden" id="wait-task-gids" name="gids"/>
+                </div>
+                <div class="modal-footer clearfix">
+                  <button type="submit" class="btn btn-primary">提交</button>
+                </div>
+            </form>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 {% endblock %}
 
 
@@ -442,6 +465,30 @@
            $('#warning-order-oid').val(selected_id);
         
            $('#warning-order-modal').modal();
+       });
+
+        $('.order-to-task').on('click',function(){
+         var item_size = $(".check-item").size();
+         var checked_items = new Array();
+         var status_array = new Array();
+         $(".check-item").each(function(index,element){
+           if(element.checked){
+             checked_items.push(element);
+             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_array.push(status_id)
+            }
+         });
+         
+          if(checked_items.length == 0){
+            alert("至少选择一个需要处理的订单");
+            return;
+          }else{ 
+            
+            
+            uids = $(checked_items).map(function(){return $(this).val()}).get().join();
+            $('#wait-task-gids').val(uids);
+            $("#order-to-task-modal").modal();    
+          }
        });
     });
 </script>

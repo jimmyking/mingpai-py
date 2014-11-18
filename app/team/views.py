@@ -159,6 +159,18 @@ def out_team():
 	db.session.commit()
 	return redirect(url_for('team.index'))
 	
+@team.route('/wait_task',methods=['POST'])
+@login_required
+def wait_task():
+	gids = request.form['gids']
+	for oid in gids.split(','):
+		order = Order.query.filter_by(id=oid).first()
+		if order.status!=5:
+			order.group_id=None
+		order.status=6
+		OrderProcess.save(oid,current_user.id,"修改状态至转任务组")
+		db.session.commit()	
+	return redirect(request.referrer)
 
 
 @team.route('/_get_team_orders/<tid>')

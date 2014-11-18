@@ -924,16 +924,8 @@
          
           if(checked_items.length == 0){
             alert("至少选择一个需要处理的订单");
+            return;
           }else{ 
-            
-            for(var i=0; i<status_array.length; i++){
-              if(status_array[i] == 2 || status_array[i] == 5){
-                
-              }else{
-                alert("只有已审核或团练完成的订单才能转任务组!");
-                return;
-              }
-            }
             uids = $(checked_items).map(function(){return $(this).val()}).get().join();
             $('#wait-task-gids').val(uids);
             $("#order-to-task-modal").modal();    
