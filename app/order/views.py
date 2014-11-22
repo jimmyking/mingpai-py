@@ -190,6 +190,17 @@ def complete_order():
 	
 	return redirect(request.referrer)
 
+@order.route('/back_order_to_start',methods=['POST'])
+@login_required
+def back_order_to_start():
+	gids = request.form['gids']
+	Order.query.filter(Order.id.in_(gids.split(','))).update({Order.status_id:1,Order.group_id:None,Order.team_id:None},synchronize_session=False)
+	for oid in gids.split(','):
+		OrderProcess.save(oid,current_user.id,"修改状态至新订单")
+	db.session.commit()
+	
+	return redirect(request.referrer)
+
 @order.route('/notification_order',methods=['POST'])
 @login_required
 def notification_order():
