@@ -552,11 +552,11 @@
     $(function() {
 
        //用户table操作
-       $(".check-all").on("ifChanged",function(event){
-         if(this.checked){
-           $('.pre-order-list').find(".check-item").iCheck('check');
+       $(".check-all").on("change",function(event){
+        if($(this).prop('checked')){
+           $('.pre-order-list').find(".check-item").prop('checked',true);
          }else{
-           $('.pre-order-list').find(".check-item").iCheck('uncheck');
+           $('.pre-order-list').find(".check-item").prop('checked',false);
          }
        });
 
