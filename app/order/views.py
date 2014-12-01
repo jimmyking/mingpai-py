@@ -34,6 +34,8 @@ def orders():
 	status_id = request.args.get('status_id')
 	if status_id and status_id !='0':
 		order_query = order_query.filter_by(status_id=status_id)
+	else:
+		order_query = order_query.filter(Order.status_id != 11)
 	type_id = request.args.get('type_id')
 	if type_id and type_id !='0':
 		order_query = order_query.filter_by(type_id=type_id)

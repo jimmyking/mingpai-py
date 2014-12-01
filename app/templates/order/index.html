@@ -901,8 +901,8 @@
          $(".check-item").each(function(index,element){
            if(element.checked){
              checked_items.push(element);
-             area_id = $(element).parent().parent().siblings().find('.area_id').val()
-             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             area_id = $(element).parent().parent().find('.area_id').val()
+             status_id = $(element).parent().parent().find('.status_id').val()
              area_array.push(area_id)
              status_array.push(status_id)
             }
@@ -941,7 +941,7 @@
          $(".check-item").each(function(index,element){
            if(element.checked){
              checked_items.push(element);
-             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_id = $(element).parent().parent().find('.status_id').val()
              status_array.push(status_id)
             }
          });
@@ -966,7 +966,7 @@
          $(".check-item").each(function(index,element){
            if(element.checked){
              checked_items.push(element);
-             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_id = $(element).parent().parent().find('.status_id').val()
              status_array.push(status_id)
             }
          });
@@ -1013,7 +1013,7 @@
          $(".check-item").each(function(index,element){
            if(element.checked){
              checked_items.push(element);
-             status_id = $(element).parent().parent().siblings().find('.status_id').val()
+             status_id = $(element).parent().parent().find('.status_id').val()
              status_array.push(status_id)
             }
          });
