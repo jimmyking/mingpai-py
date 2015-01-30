@@ -54,11 +54,13 @@
                     <i class="fa fa-search"></i> <span>订单查询中心</span>
                 </a>
             </li>
+             {% if user.role.id !=10 %}
             <li class="">
                 <a href=" {{ url_for('order.trash') }} ">
                     <i class="fa fa-trash-o"></i> <span>订单回收站</span>
                 </a>
             </li>
+            {% endif %}
         </ul>
     </section>
 <!-- /.sidebar -->
