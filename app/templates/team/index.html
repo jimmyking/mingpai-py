@@ -157,11 +157,7 @@
 
 
                 <div class="row" style="margin-top:10px;">
-                <div class="col-md-1">
-                    <button type="button" class="btn btn-info order-to-task">
-                                    <i class='fa fa-share'></i>
-                    </button>
-                    </div>
+               
                    {% for task in tasks %}
                     <div class="col-md-1">
                         <form action="{{ url_for('team.update_task') }}" method="post">
@@ -392,11 +388,11 @@
         });
         //用户table操作
         $(".modal-body").on("change",".check-all",function(event){
-            if(this.checked){
-                $(".check-item").iCheck('check');
-            }else{
-                $(".check-item").iCheck('uncheck');
-            }
+            if($(this).prop('checked')){
+           $(".check-item").prop('checked',true);
+         }else{
+           $(".check-item").prop('checked',false);
+         }
         });
 
         $(".modal-body").on("click",".view-order",function(event){

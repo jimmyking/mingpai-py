@@ -203,11 +203,11 @@
        $('.type-color').colorpicker();
        
        //用户table操作
-       $(".check-all").on("ifChanged",function(event){
-         if(this.checked){
-           $(".check-item").iCheck('check');
+      $(".check-all").on("change",function(event){
+         if($(this).prop('checked')){
+           $(".check-item").prop('checked',true);
          }else{
-           $(".check-item").iCheck('uncheck');
+           $(".check-item").prop('checked',false);
          }
        });
        
