@@ -2,6 +2,7 @@
 <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
         <ul class="sidebar-menu">
+        {% if user.role.id !=10 %}
             <li class="">
                 <a href=" {{ url_for('main.users') }} ">
                     <i class="fa fa-user"></i> <span>用户管理</span>
@@ -47,6 +48,7 @@
                     <i class="fa fa-tasks"></i> <span>任务处理中心</span>
                 </a>
             </li>
+            {% endif %}
             <li class="">
                 <a href=" {{ url_for('search.index') }} ">
                     <i class="fa fa-search"></i> <span>订单查询中心</span>

@@ -48,7 +48,9 @@ def index():
 		order_query = order_query.filter(db.cast(Order.create_date,db.DATE)<=end_date)
 	
 
-	orders = order_query.order_by('id desc').all()
+	orders = list()
+	if area_id:
+		orders = order_query.order_by('id desc').all()
 
 
 	return render_template('search/index.html',ordertypes=ordertypes,issuetypes=issuetypes,orders=orders,areas=areas,status=status)
