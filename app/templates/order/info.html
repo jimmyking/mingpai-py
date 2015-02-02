@@ -18,12 +18,19 @@
     </div>
     <div class="input-group">
       <span class="input-group-addon">帐号:</span>
+      {% if user.role.id !=10 %}
       <input name="order_no" value="{{ order.acter_account }}" class="form-control">
-
+      {% else %}
+            <input name="order_no" value="*****" class="form-control">
+      {% endif %}
     </div>
     <div class="input-group">
       <span class="input-group-addon">密码:</span>
+       {% if user.role.id !=10 %}
       <input name="order_no" value="{{ order.acter_password}}" class="form-control">
+      {% else %}
+            <input name="order_no" value="*****" class="form-control">
+      {% endif %}
     </div>
   </div>
 

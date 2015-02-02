@@ -73,6 +73,14 @@
 
                           <input type="checkbox" value="1" name="is_issue" class="icheckbox_square-blue" {% if request.args.get('is_issue') | int == 1 %}checked="true"{% endif %}>
               </div>
+               <div class="input-group">
+                          <span class="input-group-addon">旺旺:</span>
+                          <input name="wangwang" value="{% if request.args.get('wangwang') != None %}{{ request.args.get('wangwang') }}{% endif %}" class="form-control">
+              </div>
+              <div class="input-group">
+                          <span class="input-group-addon">手机:</span>
+                          <input name="mobile" value="{% if request.args.get('mobile') != None %}{{ request.args.get('mobile') }}{% endif %}" class="form-control">
+              </div>
               <div class="pull-right">
               <button class="btn btn-warning">查询</button>
               </div>
@@ -120,8 +128,10 @@
                                   <th>状态</th>
                                   <th>区服</th>
                                   <th>角色</th>
+                                  {% if user.role.id !=10 %}
                                   <th>账号</th>
                                   <th>密码</th>
+                                  {% endif %}
                                   <th>起点</th>
                                   <th>需求</th>
                                   <th>当前</th>
@@ -146,8 +156,10 @@
                                   <td>{{ order.order_status.name}}</td>
                                   <td>{{ order.area.name}}</td>
                                   <td>{{ order.acter_name }}</td>
+                                  {% if user.role.id !=10 %}
                                   <td>{{ order.acter_account }}</td>
                                   <td>{{ order.acter_password }}</td>
+                                  {% endif %}
                                   <td>{{ order.start_level }}</td>
                                   <td>{{ order.end_level }}</td>
                                   <td>{{ order.now_level }}</td>
