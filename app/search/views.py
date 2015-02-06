@@ -27,18 +27,6 @@ def index():
     acter_name = request.args.get('acter_name')
     if acter_name:
         order_query = order_query.filter_by(acter_name=acter_name)
-    area_id = request.args.get('area_id')
-    if area_id and area_id !='0':
-        order_query = order_query.filter_by(area_id=area_id)
-    status_id = request.args.get('status_id')
-    if status_id and status_id !='0':
-        order_query = order_query.filter_by(status_id=status_id)
-    type_id = request.args.get('type_id')
-    if type_id and type_id !='0':
-        order_query = order_query.filter_by(type_id=type_id)
-    is_issue = request.args.get('is_issue')
-    if is_issue and is_issue =='1':
-        order_query = order_query.filter_by(is_issue=1)
 
     wangwang = request.args.get('wangwang')
     if wangwang:
@@ -48,17 +36,8 @@ def index():
         order_query = order_query.filter_by(mobile=mobile)
 
 
-    start_date = request.args.get('start-date')
-    if start_date:
-        order_query = order_query.filter(db.cast(Order.create_date,db.DATE)>=start_date)
-    
-    end_date = request.args.get('end-date')
-    if start_date:
-        order_query = order_query.filter(db.cast(Order.create_date,db.DATE)<=end_date)
-    
-
     orders = list()
-    if area_id:
+    if order_no or acter_name or wangwang or mobile:
         orders = order_query.order_by('id desc').all()
 
 
@@ -73,25 +52,14 @@ def export():
     acter_name = request.args.get('acter_name')
     if acter_name:
         order_query = order_query.filter_by(acter_name=acter_name)
-    area_id = request.args.get('area_id')
-    if area_id and area_id !='0':
-        order_query = order_query.filter_by(area_id=area_id)
-    status_id = request.args.get('status_id')
-    if status_id and status_id !='0':
-        order_query = order_query.filter_by(status_id=status_id)
-    type_id = request.args.get('type_id')
-    if type_id and type_id !='0':
-        order_query = order_query.filter_by(type_id=type_id)
-    is_issue = request.args.get('is_issue')
-    if is_issue and is_issue =='1':
-        order_query = order_query.filter_by(is_issue=1)
-    start_date = request.args.get('start-date')
-    if start_date:
-        order_query = order_query.filter(db.cast(Order.create_date,db.DATE)>=start_date)
-    
-    end_date = request.args.get('end-date')
-    if start_date:
-        order_query = order_query.filter(db.cast(Order.create_date,db.DATE)<=end_date)
+   
+    wangwang = request.args.get('wangwang')
+    if wangwang:
+        order_query = order_query.filter_by(wangwang=wangwang)
+    mobile = request.args.get('mobile')
+    if mobile:
+        order_query = order_query.filter_by(mobile=mobile)
+
 
     orders = order_query.order_by('id desc').all()
     response=Response()

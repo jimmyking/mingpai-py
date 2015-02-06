@@ -30,49 +30,14 @@
                           <span class="input-group-addon">角色名:</span>
                           <input name="acter_name" value="{% if request.args.get('acter_name') != None %}{{ request.args.get('acter_name') }}{% endif %}" class="form-control">
               </div>
-              <div class="input-group">
-                          <span class="input-group-addon">服务器:</span>
-                          <select name="area_id" class="form-control">
-                            <option value="0">所有</option>
-                            {% for ar in areas %}
-                            <option value="{{ ar.id }}"  {% if ar.id == request.args.get('area_id') | int %} selected="true" {% endif %}>{{ ar.name }}</option>
-                            {% endfor %}
-                          </select>
-              </div>
-              <div class="input-group">
-                          <span class="input-group-addon">订单状态:</span>
-                          <select name="status_id" class="form-control">
-                            <option value="0">所有</option>
-                            {% for st in status %}
-                            <option value="{{ st.id }}" {% if st.id == request.args.get('status_id') | int %} selected="true" {% endif %}>{{ st.name }}</option>
-                            {% endfor %}
-                          </select>
-              </div>
-              <div class="input-group">
-                          <span class="input-group-addon">订单类型:</span>
-                          <select name="type_id" class="form-control">
-                            <option value="0">所有</option>
-                            {% for ot in ordertypes %}
-                            <option value="{{ ot.id }}" {% if ot.id == request.args.get('type_id') | int %} selected="true" {% endif %}>{{ ot.name }}</option>
-                            {% endfor %}
-                          </select>
-              </div>
+             
+             
+            
               
              </div>
              <div class="form-inline inline-form-magin">
 
-              <div class="input-group">
-                          <span class="input-group-addon">创建日期:</span>
-                          <input type="text" name="daterange" id="search-daterange" value="{% if request.args.get('daterange') != None %}{{ request.args.get('daterange') }}{% endif %}">
-                          <input type="hidden" name="start-date" id="start-date" value="{% if request.args.get('start-date') != None %}{{ request.args.get('start-date') }}{% endif %}">
-                          <input type="hidden" name="end-date" id="end-date" value="{% if request.args.get('end-date') != None %}{{ request.args.get('end-date') }}{% endif %}">
-              </div>
-
-             <div class="input-group">
-                          <span class="input-group-addon">异常订单:</span>
-
-                          <input type="checkbox" value="1" name="is_issue" class="icheckbox_square-blue" {% if request.args.get('is_issue') | int == 1 %}checked="true"{% endif %}>
-              </div>
+             
                <div class="input-group">
                           <span class="input-group-addon">旺旺:</span>
                           <input name="wangwang" value="{% if request.args.get('wangwang') != None %}{{ request.args.get('wangwang') }}{% endif %}" class="form-control">
@@ -103,12 +68,9 @@
                               <form action="{{ url_for('search.export') }}" method="get" style="margin:0px;display: inline">
                               <input type="hidden" name="order_no" value="{% if request.args.get('order_no') != None %}{{ request.args.get('order_no') }}{% endif %}">
                               <input type="hidden" name="acter_name" value="{% if request.args.get('acter_name') != None %}{{ request.args.get('acter_name') }}{% endif %}">
-                              <input type="hidden" name="area_id" value="{{ request.args.get('area_id') }}">
-                              <input type="hidden" name="status_id" value="{{ request.args.get('status_id') }}">
-                              <input type="hidden" name="type_id" value="{{ request.args.get('type_id') }}">
-                              <input type="hidden" name="is_issue" value="{% if request.args.get('is_issue') != None %}{{ request.args.get('is_issue') }}{% endif %}">
-                              <input type="hidden" name="start-date" value="{% if request.args.get('start-date') != None %}{{ request.args.get('start-date') }}{% endif %}">
-                              <input type="hidden" name="end-date" value="{% if request.args.get('end-date') != None %}{{ request.args.get('end-date') }}{% endif %}">
+                                <input type="hidden" name="wangwang" value="{% if request.args.get('wangwang') != None %}{{ request.args.get('wangwang') }}{% endif %}">
+                                  <input type="hidden" name="mobile" value="{% if request.args.get('mobile') != None %}{{ request.args.get('mobile') }}{% endif %}">
+                            
                               <button class="btn btn-primary"><i class='fa fa-save'></i></button>
                                 
                               </form>
